@@ -144,27 +144,75 @@ EDGE_FACES: list[tuple[int, int]] = [
 _edge_key_to_idx = {ef: i for i, ef in enumerate(EDGE_FACES)}
 
 
-def _build_move_table() -> dict[int, dict]:
-    """Compute corner cycle and edge cycle for each face.
+def _rotate_vector(v: np.ndarray, axis: np.ndarray, angle: float) -> np.ndarray:
+    """Rodrigues' rotation formula."""
+    axis = axis / np.linalg.norm(axis)
+    return (v * np.cos(angle)
+            + np.cross(axis, v) * np.sin(angle)
+            + axis * np.dot(axis, v) * (1 - np.cos(angle)))
 
-    Orientation deltas are all 0. On a megaminx, when a face rotates CW by 72°,
-    each corner piece moves to the next slot on that face. The sticker that was
-    facing the rotating face still faces the rotating face at the new slot, so
-    orientation (relative to the piece's primary reference face) is preserved.
-    This is the standard "position-based" orientation convention: orientation 0
-    means the piece is untwisted in its current slot. Under this convention,
-    a pure face rotation never introduces a twist — only permutation.
+
+def _compute_corner_cw_signs() -> list[int]:
+    """For each corner, determine the cyclic CW order of its 3 faces (viewed from outside).
+
+    Returns +1 if CW goes face[0]→face[1]→face[2] (ascending sorted index),
+            -1 if CW goes face[0]→face[2]→face[1] (descending for non-primary).
+    The sign determines whether orientation delta = best or = (3-best)%3.
     """
+    signs = []
+    for ci, v in enumerate(_corner_order):
+        corner_dir = _RAW_VERTS[v] / np.linalg.norm(_RAW_VERTS[v])
+        faces = CORNER_FACES[ci]
+        normals = [_face_centers[f] / np.linalg.norm(_face_centers[f]) for f in faces]
+        projs = [n - corner_dir * np.dot(n, corner_dir) for n in normals]
+        e1 = projs[0] / np.linalg.norm(projs[0])
+        e2 = np.cross(corner_dir, e1)
+        # Signed angle from face[0] to face[1] in the plane (positive = CCW from outside)
+        angle_f1 = np.arctan2(float(np.dot(projs[1], e2)), float(np.dot(projs[1], e1)))
+        signs.append(1 if angle_f1 < 0 else -1)
+    return signs
+
+
+_CORNER_CW_SIGN = _compute_corner_cw_signs()
+
+
+def _build_move_table() -> dict[int, dict]:
+    """Compute corner cycle, edge cycle, and orientation deltas for each face.
+
+    CW from outside = -angle around the outward face normal (right-hand rule).
+    Corner orientation: primary direction = outward normal of face[0] (lowest-indexed face).
+    The delta accounts for the cyclic CW order at each destination corner.
+    Edge orientation: 0 if primary direction preserved, 1 if flipped.
+    """
+    angle = -2 * np.pi / 5  # CW from outside = CCW in right-hand frame
     table = {}
 
     for fi, fv_ordered in enumerate(_FACE_VERTS):
-        # Corner cycle: piece at slot k moves to slot k+1 (CW order)
+        center = _face_centers[fi]
+        normal = center / np.linalg.norm(center)
+
         corner_cycle = [_vert_to_corner[v] for v in fv_ordered]
 
-        # Orientation deltas are 0: face rotations don't twist pieces
-        c_ori_delta = [0, 0, 0, 0, 0]
+        c_ori_delta = []
+        for k, v in enumerate(fv_ordered):
+            ci = _vert_to_corner[v]
+            face_indices = list(CORNER_FACES[ci])
+            primary_dir = _face_centers[face_indices[0]] / np.linalg.norm(_face_centers[face_indices[0]])
+            rotated_primary = _rotate_vector(primary_dir, normal, angle)
 
-        # Edge cycle: edge between vertex k and k+1 moves to between k+1 and k+2
+            new_v = fv_ordered[(k + 1) % 5]
+            new_ci = _vert_to_corner[new_v]
+            new_faces = list(CORNER_FACES[new_ci])
+            new_face_normals = [
+                _face_centers[f] / np.linalg.norm(_face_centers[f])
+                for f in new_faces
+            ]
+            dots = [float(np.dot(rotated_primary, nfn)) for nfn in new_face_normals]
+            best = int(np.argmax(dots))
+            # CW sign determines whether ascending or descending sorted order is CW
+            delta = best if _CORNER_CW_SIGN[new_ci] == 1 else (3 - best) % 3
+            c_ori_delta.append(delta)
+
         edge_cycle = []
         for k in range(5):
             v1 = fv_ordered[k]
@@ -172,8 +220,18 @@ def _build_move_table() -> dict[int, dict]:
             shared = tuple(sorted(frozenset(_vert_to_faces[v1]) & frozenset(_vert_to_faces[v2])))
             edge_cycle.append(_edge_key_to_idx[shared])
 
-        # Edge orientation deltas are 0 for same reason
-        e_ori_delta = [0, 0, 0, 0, 0]
+        e_ori_delta = []
+        for k in range(5):
+            src_ei = edge_cycle[k]
+            f_pair = list(EDGE_FACES[src_ei])
+            primary_dir = _face_centers[f_pair[0]] / np.linalg.norm(_face_centers[f_pair[0]])
+            rotated_primary = _rotate_vector(primary_dir, normal, angle)
+
+            dst_ei = edge_cycle[(k + 1) % 5]
+            new_f_pair = list(EDGE_FACES[dst_ei])
+            new_primary_dir = _face_centers[new_f_pair[0]] / np.linalg.norm(_face_centers[new_f_pair[0]])
+            dot = float(np.dot(rotated_primary, new_primary_dir))
+            e_ori_delta.append(0 if dot > 0 else 1)
 
         table[fi] = {
             "corner_cycle": corner_cycle,
