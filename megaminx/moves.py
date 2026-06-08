@@ -95,7 +95,7 @@ _FACE_VERTS = [_sort_face_cw(fv, fc) for fv, fc in zip(_FACE_VERTS_SORTED, _face
 
 # WCA face names: U, then 5 upper-ring, then 5 lower-ring, then D
 _u_neighbors = [i for i in range(1, 12) if any(v in _FACE_VERTS[0] for v in _FACE_VERTS[i])]
-_d_neighbors = [i for i in range(1, 12) if any(v in _FACE_VERTS[11] for v in _FACE_VERTS[i])]
+_d_neighbors = [i for i in range(1, 11) if any(v in _FACE_VERTS[11] for v in _FACE_VERTS[i])]
 
 def _face_angle_around_y(fi: int) -> float:
     c = _face_centers[fi]
