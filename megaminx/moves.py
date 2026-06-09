@@ -93,7 +93,7 @@ _FACE_VERTS_SORTED = [_FACE_VERTS_RAW[_face_order[i]] for i in range(12)]
 _face_centers = [_RAW_VERTS[fv].mean(axis=0) for fv in _FACE_VERTS_SORTED]
 _FACE_VERTS = [_sort_face_cw(fv, fc) for fv, fc in zip(_FACE_VERTS_SORTED, _face_centers)]
 
-# WCA face names: U, then 5 upper-ring, then 5 lower-ring, then D
+# WCA face names in y-sorted order (U at top, D at bottom)
 _u_neighbors = [i for i in range(1, 12) if any(v in _FACE_VERTS[0] for v in _FACE_VERTS[i])]
 _d_neighbors = [i for i in range(1, 11) if any(v in _FACE_VERTS[11] for v in _FACE_VERTS[i])]
 
@@ -104,8 +104,8 @@ def _face_angle_around_y(fi: int) -> float:
 _u_ring = sorted(_u_neighbors, key=_face_angle_around_y)
 _d_ring = sorted(_d_neighbors, key=_face_angle_around_y)
 
-_WCA_U_RING = ["F", "FR", "BR", "BL", "FL"]
-_WCA_D_RING = ["DFR", "DR", "DBR", "DBL", "DFL"]
+_WCA_U_RING = ["F", "R", "L", "DL", "UL"]
+_WCA_D_RING = ["DR", "UR", "BR", "BL", "B"]
 FACE_NAMES = (
     ["U"]
     + [_WCA_U_RING[i] for i in range(5)]
