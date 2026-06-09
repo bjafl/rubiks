@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 from dataclasses import dataclass, field
-from megaminx.model import SOLVED_STATE
+from megaminx.model import MegaminxState, SOLVED_STATE
 from megaminx.moves import apply_move, parse_move
 
 
@@ -17,7 +17,7 @@ def parse_sequence(text: str) -> list[str]:
 
 @dataclass
 class ViewerState:
-    megaminx: object = field(default_factory=lambda: SOLVED_STATE.copy())
+    megaminx: MegaminxState = field(default_factory=lambda: SOLVED_STATE.copy())
     sequence: list[str] = field(default_factory=list)
     move_index: int = 0
     alg_name: str | None = None
