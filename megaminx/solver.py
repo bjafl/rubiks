@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 from megaminx.model import MegaminxState
 from megaminx.moves import apply_move, ALL_MOVES
-from megaminx.heuristics import lower_bound
 
 _MAX_SEARCH_NODES = 500_000
 
