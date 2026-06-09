@@ -164,16 +164,16 @@ def section(title: str):
 # METODE 1 + 3: EP, CP, CO
 # ─────────────────────────────────────────────────────────────────
 section("METODE 1+3 — EP (kantpermutasjon)")
-check_alg("EP 1", "FR++ U-- FR-- U- FR++ U-- FR--", "3-sykel kanter mot klokken")
-check_alg("EP 1⁻¹", "FR++ U++ FR-- U FR++ U++ FR--", "3-sykel kanter med klokken")
+check_alg("EP 1", "R++ U-- R-- U- R++ U-- R--", "3-sykel kanter mot klokken")
+check_alg("EP 1⁻¹", "R++ U++ R-- U R++ U++ R--", "3-sykel kanter med klokken")
 
 section("METODE 1+3 — CP / Niklas (hjørnepermutasjon)")
-check_alg("Niklas", "FR U- FL- U FR- U- FL U", "3-sykel hjørner, +1 twist")
-check_alg("Niklas⁻¹", "U- FL- U FR U FL U- FR-", "invers 3-sykel hjørner")
+check_alg("Niklas", "R U- UL- U R- U- UL U", "3-sykel hjørner, +1 twist")
+check_alg("Niklas⁻¹", "U- UL- U R U- UL U R-", "invers 3-sykel hjørner")
 
 section("METODE 1+3 — CO (hjørneorientering)")
-check_alg("Sune", "FR U FR- U FR U-- FR-", "+1 til 3 hjørner")
-check_alg("Anti-Sune", "FR- U- FR U- FR- U++ FR", "+2 til 3 hjørner")
+check_alg("Sune", "R U R- U R U-- R-", "+1 til 3 hjørner")
+check_alg("Anti-Sune", "R- U- R U- R- U++ R", "+2 til 3 hjørner")
 
 # ─────────────────────────────────────────────────────────────────
 # METODE 4: OCLL — alle 16
@@ -181,22 +181,22 @@ check_alg("Anti-Sune", "FR- U- FR U- FR- U++ FR", "+2 til 3 hjørner")
 section("METODE 4 — OCLL (alle 16, skal være pure CO)")
 
 ocll = [
-    ("CO 1",  "FR U FR- U FR U FR- U-- FR U- FR-"),
-    ("CO 2",  "F FR U++ FR- U- FR U- FR- F-"),
-    ("CO 3",  "FR U++ FR- U FR U++ FR-"),
-    ("CO 4",  "FR U FR- U FR U FR- U-- FR U- FR-"),  # same as CO 1 per our notes
-    ("CO 5",  "FR U FR- U FR U-- FR-"),              # Sune (U-- variant)
-    ("CO 6",  "FR- U- FR U- FR- U++ FR"),            # Anti-Sune (U++ variant)
-    ("CO 7",  "FR U++ FR- U- FR U- FR-"),
-    ("CO 8",  "FR U FR- U++ FR U++ FR-"),
-    ("CO 9",  "FR U++ FR- U- FR U FR- U- FR U- FR-"),
-    ("CO 10", "FR U FR- U FR U- FR- U FR U-- FR-"),
-    ("CO 11", "FR U FR- U FR U FR- U- FR U-- FR-"),
-    ("CO 12", "FR U-- FR- U-- FR U++ FR- U-- FR U- FR-"),
-    ("CO 13", "FR U++ FR-- U- FR++ U- FR-- U++ FR"),
-    ("CO 14", "FR- U-- FR++ U FR-- U FR++ U-- FR-"),
-    ("CO 15", "FR U FR- U++ FR U-- FR- U FR U-- FR-"),
-    ("CO 16", "FR U++ FR- U- FR U++ FR- U-- FR U- FR-"),
+    ("CO 1",  "R U R- U R U R- U-- R U- R-"),
+    ("CO 2",  "F R U++ R- U- R U- R- F-"),
+    ("CO 3",  "R U++ R- U R U++ R-"),
+    ("CO 4",  "R U R- U R U R- U-- R U- R-"),  # same as CO 1 per our notes
+    ("CO 5",  "R U R- U R U-- R-"),             # Sune (U-- variant)
+    ("CO 6",  "R- U- R U- R- U++ R"),           # Anti-Sune (U++ variant)
+    ("CO 7",  "R U++ R- U- R U- R-"),
+    ("CO 8",  "R U R- U++ R U++ R-"),
+    ("CO 9",  "R U++ R- U- R U R- U- R U- R-"),
+    ("CO 10", "R U R- U R U- R- U R U-- R-"),
+    ("CO 11", "R U R- U R U R- U- R U-- R-"),
+    ("CO 12", "R U-- R- U-- R U++ R- U-- R U- R-"),
+    ("CO 13", "R U++ R-- U- R++ U- R-- U++ R"),
+    ("CO 14", "R- U-- R++ U R-- U R++ U-- R-"),
+    ("CO 15", "R U R- U++ R U-- R- U R U-- R-"),
+    ("CO 16", "R U++ R- U- R U++ R- U-- R U- R-"),
 ]
 
 for label, moves in ocll:
@@ -208,11 +208,11 @@ for label, moves in ocll:
 section("METODE 4 — EP-algoritmer (alle 5)")
 
 ep_algs = [
-    ("EP 1",  "FR++ U-- FR-- U- FR++ U-- FR--"),
-    ("EP 2",  "FR++ U++ FR-- U  FR++ U++ FR--"),
-    ("EP 3",  "FR U FR- F- FR U FR- U- FR- F FR++ U- FR-"),
-    ("EP 4",  "FR U FR- U FR- U- FR++ U- FR- U FR- U FR U++"),
-    ("EP 5",  "FL FR U++ FL- U FR- FL U- FR U++ FL- U++ FR-"),
+    ("EP 1",  "R++ U-- R-- U- R++ U-- R--"),
+    ("EP 2",  "R++ U++ R-- U  R++ U++ R--"),
+    ("EP 3",  "R U R- F- R U R- U- R- F R++ U- R-"),
+    ("EP 4",  "R U R- U R- U- R++ U- R- U R- U R U++"),
+    ("EP 5",  "UL R U++ UL- U R- UL U- R U++ UL- U++ R-"),
 ]
 
 for label, moves in ep_algs:
@@ -222,21 +222,21 @@ for label, moves in ep_algs:
 # EKSTRA: Verifiser at EP 1 og EP 2 er inverse av hverandre
 # ─────────────────────────────────────────────────────────────────
 section("EKSTRA — EP 1 og EP 2 er inverse?")
-s1 = apply("FR++ U-- FR-- U- FR++ U-- FR--")
-s2 = apply("FR++ U++ FR-- U FR++ U++ FR--", s1)
+s1 = apply("R++ U-- R-- U- R++ U-- R--")
+s2 = apply("R++ U++ R-- U R++ U++ R--", s1)
 identity = np.array_equal(s2.corners, SOLVED_STATE.corners) and np.array_equal(s2.edges, SOLVED_STATE.edges)
 print(f"  {'✓' if identity else '✗'} EP1 ∘ EP2 = identitet: {identity}")
 
 section("EKSTRA — Niklas ∘ Niklas⁻¹ = identitet?")
-s1 = apply("FR U- FL- U FR- U- FL U")
-s2 = apply("U- FL- U FR U FL U- FR-", s1)
+s1 = apply("R U- UL- U R- U- UL U")
+s2 = apply("U- UL- U R U- UL U R-", s1)
 identity = np.array_equal(s2.corners, SOLVED_STATE.corners) and np.array_equal(s2.edges, SOLVED_STATE.edges)
 print(f"  {'✓' if identity else '✗'} Niklas ∘ Niklas⁻¹ = identitet: {identity}")
 
 section("EKSTRA — Sune³ = identitet?")
 s = copy_state(SOLVED_STATE)
 for _ in range(3):
-    s = apply("FR U FR- U FR U-- FR-", s)
+    s = apply("R U R- U R U-- R-", s)
 identity = np.array_equal(s.corners, SOLVED_STATE.corners) and np.array_equal(s.edges, SOLVED_STATE.edges)
 print(f"  {'✓' if identity else '✗'} Sune³ = identitet: {identity}")
 
