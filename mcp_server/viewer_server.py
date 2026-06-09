@@ -81,6 +81,10 @@ def _handle_command(cmd: dict) -> dict:
         _broadcast_sync({"type": "reset"})
     elif t == "get_library":
         return {"ok": True, "library": get_library()}
+    elif t == "get_state":
+        snap = VIEWER_STATE.state_snapshot()
+        snap["ok"] = True
+        return snap
     else:
         raise ValueError(f"Unknown command type: {t!r}")
     return {"ok": True}

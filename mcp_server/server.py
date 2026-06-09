@@ -71,8 +71,7 @@ def tool_viewer_reset() -> dict:
 
 def tool_viewer_show_state() -> str:
     """Return a text description of the current viewer state."""
-    from mcp_server.viewer_server import VIEWER_STATE
-    snap = VIEWER_STATE.state_snapshot()
+    snap = _viewer_post({"type": "get_state"})
     return (
         f"Algorithm: {snap['algName'] or '(custom)'}\n"
         f"Move: {snap['moveIndex']} / {snap['totalMoves']}\n"
