@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from megaminx.model import SOLVED_STATE, is_solved
-from megaminx.moves import apply_move, apply_sequence, FACE_NAMES, ALL_MOVES
+from megaminx.moves import apply_move, apply_sequence, get_geometry_data, FACE_NAMES, ALL_MOVES
 
 def test_face_names_count():
     assert len(FACE_NAMES) == 12
@@ -50,8 +50,6 @@ def test_result_state_is_valid():
         assert r.valid, f"Move {move!r} produced invalid state: {r.errors}"
 
 
-from megaminx.moves import get_geometry_data, FACE_NAMES
-
 def test_get_geometry_data_structure():
     g = get_geometry_data()
     for key in ["face_names", "face_vertices", "face_centers",
@@ -70,6 +68,8 @@ def test_get_geometry_data_counts():
     assert all(len(cf) == 3 for cf in g["corner_faces"])
     assert len(g["edge_faces"]) == 30
     assert all(len(ef) == 2 for ef in g["edge_faces"])
+    assert len(g["face_edge_cycles"]) == 12
+    assert all(len(ec) == 5 for ec in g["face_edge_cycles"])
 
 def test_get_geometry_data_face_names_match():
     g = get_geometry_data()
