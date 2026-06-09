@@ -34,3 +34,46 @@ def test_sune_six_times_is_identity():
     for _ in range(6):
         state = apply_sequence(state, sexy_move)
     assert is_solved(state), "Sexy move × 6 should return to solved"
+
+from megaminx.algorithms import get_library, SINGLE_ALGS, LIBRARY_ORDER
+
+def test_single_algs_has_co9():
+    assert "CO9" in SINGLE_ALGS
+    assert SINGLE_ALGS["CO9"] == [
+        "FR", "U++", "FR-", "U-", "FR", "U", "FR-", "U-", "FR", "U-", "FR-"
+    ]
+
+def test_single_algs_has_co10():
+    assert "CO10" in SINGLE_ALGS
+    assert SINGLE_ALGS["CO10"] == [
+        "FR", "U", "FR-", "U", "FR", "U-", "FR-", "U", "FR", "U--", "FR-"
+    ]
+
+def test_single_algs_has_niklas():
+    assert "NIKLAS" in SINGLE_ALGS
+    assert "NIKLAS_INV" in SINGLE_ALGS
+
+def test_single_algs_has_ep():
+    assert "EP1" in SINGLE_ALGS
+    assert "EP2" in SINGLE_ALGS
+
+def test_get_library_returns_ordered_list():
+    lib = get_library()
+    assert isinstance(lib, list)
+    assert len(lib) >= 8
+    names = [e["name"] for e in lib]
+    assert "CO9" in names
+    assert "CO10" in names
+    assert "SUNE" in names
+    assert "NIKLAS" in names
+
+def test_get_library_entries_have_moves():
+    for entry in get_library():
+        assert "name" in entry
+        assert "moves" in entry
+        assert isinstance(entry["moves"], list)
+        assert len(entry["moves"]) > 0
+
+def test_library_order_constant():
+    assert LIBRARY_ORDER[0] == "CO9"
+    assert LIBRARY_ORDER[1] == "CO10"

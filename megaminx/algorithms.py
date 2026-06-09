@@ -10,10 +10,10 @@
 #   B  -> BR  or BL depending on context
 
 ALGORITHM_SETS: dict[str, list[list[str]]] = {
-    # Corner Orientation algorithms (affect only corner orientations)
+    # Corner Orientation algorithms (CO — also permutes top edges as side effect)
     "CO_ALGS": [
-        ["FR", "U", "FR-", "U", "FR", "U++", "FR-"],         # Sune
-        ["FR-", "U-", "FR", "U-", "FR-", "U--", "FR"],        # Anti-Sune
+        ["FR", "U", "FR-", "U", "FR", "U--", "FR-"],         # Sune
+        ["FR-", "U-", "FR", "U-", "FR-", "U++", "FR"],        # Anti-Sune
         ["FR", "U++", "FR-", "U-", "FR", "U-", "FR-"],        # Double Sune variant
     ],
     # Corner Permutation algorithms
@@ -34,11 +34,26 @@ ALGORITHM_SETS: dict[str, list[list[str]]] = {
 }
 
 SINGLE_ALGS: dict[str, list[str]] = {
-    "SUNE":       ["FR", "U", "FR-", "U", "FR", "U++", "FR-"],
-    "ANTI_SUNE":  ["FR-", "U-", "FR", "U-", "FR-", "U--", "FR"],
+    "CO9":        ["FR", "U++", "FR-", "U-", "FR", "U", "FR-", "U-", "FR", "U-", "FR-"],
+    "CO10":       ["FR", "U", "FR-", "U", "FR", "U-", "FR-", "U", "FR", "U--", "FR-"],
+    "SUNE":       ["FR", "U", "FR-", "U", "FR", "U--", "FR-"],
+    "ANTI_SUNE":  ["FR-", "U-", "FR", "U-", "FR-", "U++", "FR"],
+    "NIKLAS":     ["FR", "U-", "FL-", "U", "FR-", "U-", "FL", "U"],
+    "NIKLAS_INV": ["U-", "FL-", "U", "FR", "U-", "FL", "U", "FR-"],
+    "EP1":        ["FR++", "U--", "FR--", "U-", "FR++", "U--", "FR--"],
+    "EP2":        ["FR++", "U++", "FR--", "U", "FR++", "U++", "FR--"],
     "SEXY":       ["FR", "U", "FR-", "U-"],
     "SLEDGE":     ["FR-", "F", "FR", "F-"],
 }
+
+LIBRARY_ORDER = [
+    "CO9", "CO10", "SUNE", "ANTI_SUNE", "NIKLAS", "NIKLAS_INV", "EP1", "EP2",
+]
+
+
+def get_library() -> list[dict]:
+    """Return algorithms in display order for the viewer library."""
+    return [{"name": n, "moves": SINGLE_ALGS[n]} for n in LIBRARY_ORDER]
 
 
 def list_algorithms() -> dict[str, list[list[str]]]:
