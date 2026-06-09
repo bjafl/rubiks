@@ -12,6 +12,73 @@ from mcp_server.session import SessionState
 SESSION = SessionState()
 mcp = FastMCP("megaminx")
 
+import json as _json
+import urllib.request as _urlreq
+import urllib.error as _urlerr
+
+_VIEWER_API = "http://localhost:8766/api/command"
+
+
+def _viewer_post(cmd: dict) -> dict:
+    body = _json.dumps(cmd).encode()
+    req = _urlreq.Request(
+        _VIEWER_API,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        resp = _urlreq.urlopen(req, timeout=3.0)
+        return _json.loads(resp.read())
+    except _urlerr.HTTPError as exc:
+        err = _json.loads(exc.read()).get("error", str(exc))
+        raise ValueError(err) from exc
+    except OSError as exc:
+        raise RuntimeError(
+            "Viewer server not running. Start with: python -m mcp_server.viewer_server"
+        ) from exc
+
+
+def tool_viewer_load_algorithm(name: str) -> dict:
+    """Load a named algorithm into the viewer and reset to move 0."""
+    return _viewer_post({"type": "load_algorithm", "name": name})
+
+
+def tool_viewer_animate_sequence(sequence: str) -> dict:
+    """Load a custom move sequence (space-separated project notation) into the viewer."""
+    return _viewer_post({"type": "animate_sequence", "sequence": sequence})
+
+
+def tool_viewer_step_forward() -> dict:
+    """Advance the viewer by one move."""
+    return _viewer_post({"type": "step_forward"})
+
+
+def tool_viewer_step_backward() -> dict:
+    """Reverse the viewer by one move."""
+    return _viewer_post({"type": "step_backward"})
+
+
+def tool_viewer_goto_move(n: int) -> dict:
+    """Jump the viewer to move index n (0 = start)."""
+    return _viewer_post({"type": "goto_move", "n": n})
+
+
+def tool_viewer_reset() -> dict:
+    """Reset the viewer to solved state."""
+    return _viewer_post({"type": "reset"})
+
+
+def tool_viewer_show_state() -> str:
+    """Return a text description of the current viewer state."""
+    from mcp_server.viewer_server import VIEWER_STATE
+    snap = VIEWER_STATE.state_snapshot()
+    return (
+        f"Algorithm: {snap['algName'] or '(custom)'}\n"
+        f"Move: {snap['moveIndex']} / {snap['totalMoves']}\n"
+        f"Current move: {snap['currentMove'] or '-'}"
+    )
+
 
 def tool_get_state() -> dict:
     d = state_to_dict(SESSION.state)
@@ -189,6 +256,13 @@ mcp.tool()(tool_apply_named_alg)
 mcp.tool()(tool_explain_sequence)
 mcp.tool()(tool_list_algorithms)
 mcp.tool()(tool_undo)
+mcp.tool()(tool_viewer_load_algorithm)
+mcp.tool()(tool_viewer_animate_sequence)
+mcp.tool()(tool_viewer_step_forward)
+mcp.tool()(tool_viewer_step_backward)
+mcp.tool()(tool_viewer_goto_move)
+mcp.tool()(tool_viewer_reset)
+mcp.tool()(tool_viewer_show_state)
 
 if __name__ == "__main__":
     mcp.run()

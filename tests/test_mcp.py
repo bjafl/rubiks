@@ -1,4 +1,9 @@
 # tests/test_mcp.py
+import json
+import threading
+import time
+import urllib.request
+import urllib.error
 import pytest
 import numpy as np
 from megaminx.model import SOLVED_STATE, is_solved
@@ -10,6 +15,15 @@ from mcp_server import server as srv
 @pytest.fixture(autouse=True)
 def fresh_session():
     srv.SESSION.reset()
+
+
+@pytest.fixture(scope="module", autouse=True)
+def viewer_server_for_mcp():
+    from mcp_server import viewer_server as vs
+    t = threading.Thread(target=vs.run, daemon=True)
+    t.start()
+    time.sleep(0.6)
+    yield
 
 def test_get_state_returns_dict():
     result = srv.tool_get_state()
@@ -81,3 +95,41 @@ def test_get_face():
     result = srv.tool_get_face("U")
     assert isinstance(result, dict)
     assert "face" in result
+
+
+def test_tool_viewer_load_algorithm():
+    from mcp_server.server import tool_viewer_load_algorithm
+    result = tool_viewer_load_algorithm("CO9")
+    assert result["ok"] is True
+
+
+def test_tool_viewer_load_algorithm_unknown_raises():
+    from mcp_server.server import tool_viewer_load_algorithm
+    with pytest.raises(ValueError, match="Unknown algorithm"):
+        tool_viewer_load_algorithm("DOES_NOT_EXIST")
+
+
+def test_tool_viewer_animate_sequence():
+    from mcp_server.server import tool_viewer_animate_sequence
+    result = tool_viewer_animate_sequence("FR U++ FR- U-")
+    assert result["ok"] is True
+
+
+def test_tool_viewer_step_forward():
+    from mcp_server.server import tool_viewer_load_algorithm, tool_viewer_step_forward
+    tool_viewer_load_algorithm("CO9")
+    result = tool_viewer_step_forward()
+    assert result["ok"] is True
+
+
+def test_tool_viewer_reset():
+    from mcp_server.server import tool_viewer_reset
+    result = tool_viewer_reset()
+    assert result["ok"] is True
+
+
+def test_tool_viewer_show_state_returns_string():
+    from mcp_server.server import tool_viewer_show_state
+    result = tool_viewer_show_state()
+    assert isinstance(result, str)
+    assert "Move:" in result
