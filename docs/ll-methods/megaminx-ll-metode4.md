@@ -9,7 +9,7 @@
 
 | Steg | Antall | Kilde |
 |------|--------|-------|
-| OCLL | 16 | SpeedCubeDB (R=FR, U2=U++, U2'=U--) |
+| OCLL | 16 | SpeedCubeDB (R=R høyre flate, U2=U++, U2'=U--) |
 | EP | 5 | SpeedCubeDB / sim-verifisert |
 | CP | 1 + invers | Niklas, verifisert |
 
@@ -20,39 +20,39 @@
 > **Gjenkjenning:** se på sideflater til topp-hjørnene. Tell U-farger synlig per hjørne.
 > Mål: finn riktig OCLL-case → 1 app → alle 5 orientert.
 
-Notasjon brukt her: `FR` = høyre-fremre flate, `U` = topp, `++` = 144° CW.
+Notasjon brukt her: `R` = høyre flate, `U` = topp, `++` = 144° CW.
 
 ### Sune-familien (enkle, 7 trekk)
 
 ```
-CO 5  Sune       FR U FR- U FR U-- FR-
-CO 6  Anti-Sune  FR- U- FR U- FR- U++ FR
-CO 7             FR U++ FR- U- FR U- FR-
-CO 8             FR U FR- U++ FR U++ FR-
-CO 3             FR U++ FR- U FR U++ FR-
+CO 5  Sune       R U R- U R U-- R-
+CO 6  Anti-Sune  R- U- R U- R- U++ R
+CO 7             R U++ R- U- R U- R-
+CO 8             R U R- U++ R U++ R-
+CO 3             R U++ R- U R U++ R-
 ```
 
 ### Medium (9 trekk)
 
 ```
-CO 2   F FR U++ FR- U- FR U- FR- F-
-CO 4   FR U FR- U FR U FR- U-- FR U- FR-    (se: det er CO 1 alternativ form)
-CO 13  FR U++ FR-- U- FR++ U- FR-- U++ FR
-CO 14  FR- U-- FR++ U FR-- U FR++ U-- FR-
+CO 2   F R U++ R- U- R U- R- F-
+CO 4   R U R- U R U R- U-- R U- R-    (se: det er CO 1 alternativ form)
+CO 13  R U++ R-- U- R++ U- R-- U++ R
+CO 14  R- U-- R++ U R-- U R++ U-- R-
 ```
 
-> CO 13/14: legg merke til `FR++`/`FR--` (double front-right) — beholder CO-effekten med færre U-trekk.
+> CO 13/14: legg merke til `R++`/`R--` (double front-right) — beholder CO-effekten med færre U-trekk.
 
 ### Lange (11 trekk)
 
 ```
-CO 1   FR U FR- U FR U FR- U-- FR U- FR-
-CO 9   FR U++ FR- U- FR U FR- U- FR U- FR-
-CO 10  FR U FR- U FR U- FR- U FR U-- FR-
-CO 11  FR U FR- U FR U FR- U- FR U-- FR-
-CO 12  FR U-- FR- U-- FR U++ FR- U-- FR U- FR-
-CO 15  FR U FR- U++ FR U-- FR- U FR U-- FR-
-CO 16  FR U++ FR- U- FR U++ FR- U-- FR U- FR-
+CO 1   R U R- U R U R- U-- R U- R-
+CO 9   R U++ R- U- R U R- U- R U- R-
+CO 10  R U R- U R U- R- U R U-- R-
+CO 11  R U R- U R U R- U- R U-- R-
+CO 12  R U-- R- U-- R U++ R- U-- R U- R-
+CO 15  R U R- U++ R U-- R- U R U-- R-
+CO 16  R U++ R- U- R U++ R- U-- R U- R-
 ```
 
 ### OCLL-gjenkjenning (hurtigguide)
@@ -76,12 +76,12 @@ Bare jevne permutasjoner er mulige (A₅-gruppe).
 ### EP-algoritmer
 
 ```
-EP 1  FR++ U-- FR-- U- FR++ U-- FR--          (7 trekk, verifisert: 3-sykel mot klokken)
-EP 2  FR++ U++ FR-- U  FR++ U++ FR--           (7 trekk, invers av EP 1)
-EP 3  FR U FR- F- FR U FR- U- FR- F FR++ U- FR-          (13 trekk)
-EP 4  FR U FR- U FR- U- FR++ U- FR- U FR- U FR U++        (14 trekk)
+EP 1  R++ U-- R-- U- R++ U-- R--          (7 trekk, verifisert: 3-sykel mot klokken)
+EP 2  R++ U++ R-- U  R++ U++ R--           (7 trekk, invers av EP 1)
+EP 3  R U R- F- R U R- U- R- F R++ U- R-          (13 trekk)
+EP 4  R U R- U R- U- R++ U- R- U R- U R U++        (14 trekk)
 ```
-> ⚠️ EP 5 (`FL FR U++ FL- U FR- FL U- FR U++ FL- U++ FR-`) er UGYLDIG — beveger ikke-top-brikker. Bruk bankingstrategi med EP 1/2 for å nå alle EP-tilfeller.
+> ⚠️ EP 5 (`UL R U++ UL- U R- UL U- R U++ UL- U++ R-`) er UGYLDIG — beveger ikke-top-brikker. Bruk bankingstrategi med EP 1/2 for å nå alle EP-tilfeller.
 
 ### Gjenkjenning
 
@@ -112,8 +112,8 @@ Eller bruk EP → CP → OCLL (da trenger du ekstra CO-trinn sist).
 ### Niklas
 
 ```
-Niklas    FR U- FL- U FR- U- FL U    (sykler: FL-hjørne → FR-hjørne → front-hjørne)
-Niklas⁻¹  U- FL- U FR U- FL U FR-   (invers sykel)
+Niklas    R U- UL- U R- U- UL U    (sykler: UL-hjørne → R-hjørne → front-hjørne)
+Niklas⁻¹  U- UL- U R U- UL U R-   (invers sykel)
 ```
 
 ### Gjenkjenning
@@ -162,15 +162,15 @@ Forventet totale apps: **3–5** (OCLL=1, EP=1–2, CP=1–2, CO-fix=0–1)
 
 | Symbol | Megaminx-betydning |
 |---|---|
-| `FR` | Høyre-fremre flate, 72° CW |
-| `FR-` | Høyre-fremre flate, 72° CCW |
-| `FR++` | Høyre-fremre flate, 144° CW |
-| `FR--` | Høyre-fremre flate, 144° CCW |
+| `R` | Høyre flate, 72° CW |
+| `R-` | Høyre flate, 72° CCW |
+| `R++` | Høyre flate, 144° CW |
+| `R--` | Høyre flate, 144° CCW |
 | `U` | Topp, 72° CW |
 | `U++` | Topp, 144° CW (= U2 i 3×3-notasjon) |
 | `U--` | Topp, 144° CCW (= U2' i 3×3-notasjon) |
 | `F` | Fremre flate |
-| `FL` | Venstre-fremre flate |
+| `UL` | Øvre-venstre flate (bak-venstre) |
 
 ---
 

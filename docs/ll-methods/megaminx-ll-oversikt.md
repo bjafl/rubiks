@@ -26,9 +26,9 @@ Bruker kun det du kjenner fra 3×3 + én ny EP-alg.
 Se `megaminx-ll-metode1-3.md` for fullstendig referanse.
 
 **Alger:**
-- EP: `FR++ U-- FR-- U- FR++ U-- FR--`
-- CP: Niklas `FR U- FL- U FR- U- FL U`
-- CO: Sune `FR U FR- U FR U++ FR-`
+- EP: `R++ U-- R-- U- R++ U-- R--`
+- CP: Niklas `R U- UL- U R- U- UL U`
+- CO: Sune `R U R- U R U-- R-`
 
 ---
 
@@ -42,7 +42,7 @@ Erstatt Niklas med intuitiv commutator-innsetting for CP. Prinsipp:
 
 > Finn hjørne på feil plass → sett det over riktig slot → AUF → trekk tilbake
 
-Eksemel: `(FR- U FR)  AUF  (FR- U- FR)` — bygg selv fra situasjonen.
+Eksemel: `(R- U R)  AUF  (R- U- R)` — bygg selv fra situasjonen.
 
 **Alger:** Sune + EP  
 **Tradeoff:** CP tar 3× lengre tid uten fast alg, men null ekstra memorisering.
@@ -54,7 +54,7 @@ Eksemel: `(FR- U FR)  AUF  (FR- U- FR)` — bygg selv fra situasjonen.
 Identisk med Metode 1, men legg til Anti-Sune eksplisitt. Halverer CO worst-case fra 5 apps til 2.
 
 ```
-Anti-Sune: FR- U- FR U- FR- U-- FR
+Anti-Sune: R- U- R U- R- U-- R
 ```
 
 Se `megaminx-ll-metode1-3.md`.

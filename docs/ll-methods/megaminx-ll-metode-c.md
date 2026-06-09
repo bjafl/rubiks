@@ -32,8 +32,8 @@ Dette betyr: etter CO-trinnet er hjørnepermutasjonen **nøyaktig den samme** so
 ### CO: CO9 og CO10
 
 ```
-CO9   FR U++ FR- U- FR U FR- U- FR U- FR-     (11 trekk)
-CO10  FR U FR- U FR U- FR- U FR U-- FR-        (11 trekk)
+CO9   R U++ R- U- R U R- U- R U- R-     (11 trekk)
+CO10  R U R- U R U- R- U R U-- R-        (11 trekk)
 ```
 
 CO9 og CO10 er hverandres inverse. Orienterings-delta fra startposisjon:
@@ -43,7 +43,7 @@ CO9  effekt på slots 0–4:  [+1,  0, +2, +2, +1]
 CO10 effekt på slots 0–4:  [+2,  0, +1, +1, +2]
 ```
 
-Slot 1 (én til høyre for FR-flaten, sett ovenfra) er alltid **frosset** — det hjørnet berøres ikke av verken CO9 eller CO10. De to algoritmenene skiller seg i om nabohjørnene (slot 0 og 4) får +1 eller +2.
+Slot 1 (én til høyre for R-flaten, sett ovenfra) er alltid **frosset** — det hjørnet berøres ikke av verken CO9 eller CO10. De to algoritmenene skiller seg i om nabohjørnene (slot 0 og 4) får +1 eller +2.
 
 > ⚠️ CO9 og CO10 forstyrrer 3 topp-kanter (slots 1, 3, 4) selv om hjørneposisjonene bevares.
 > EP-trinnet etter CO er fortsatt nødvendig.
@@ -53,15 +53,15 @@ Slot 1 (én til høyre for FR-flaten, sett ovenfra) er alltid **frosset** — de
 ### EP: kantpermutasjon
 
 ```
-EP1   FR++ U-- FR-- U- FR++ U-- FR--    (7 trekk, 3-sykel mot klokken)
-EP2   FR++ U++ FR-- U  FR++ U++ FR--    (7 trekk, invers av EP1)
+EP1   R++ U-- R-- U- R++ U-- R--    (7 trekk, 3-sykel mot klokken)
+EP2   R++ U++ R-- U  R++ U++ R--    (7 trekk, invers av EP1)
 ```
 
 ### CP: Niklas
 
 ```
-Niklas    FR U- FL- U FR- U- FL U         (sykler 3 hjørner, +1 twist på hvert)
-Niklas⁻¹  U- FL- U FR U- FL U FR-         (invers sykel)
+Niklas    R U- UL- U R- U- UL U         (sykler 3 hjørner, +1 twist på hvert)
+Niklas⁻¹  U- UL- U R U- UL U R-         (invers sykel)
 ```
 
 ---
@@ -90,7 +90,7 @@ AUF_n  CO9  AUF_(5-n)
 
 Finn et hjørne med korrekt orientering (0 vridning nødvendig). Det hjørnet er "ankeret."
 
-1. AUF ankeret til **slot 1** (én til høyre for FR, sett ovenfra CW)
+1. AUF ankeret til **slot 1** (én til høyre for R, sett ovenfra CW)
 2. Se på nabohjørnene (slot 0 og slot 4 etter AUF):
    - Begge trenger **+1 vridning** → bruk `CO10`
    - Begge trenger **+2 vridning** → bruk `CO9`
@@ -202,13 +202,13 @@ CO-gjenkjenningsregelen (2-kall med anker-strategi).
 
 | Symbol | Megaminx-betydning |
 |---|---|
-| `FR` | Høyre-fremre flate, 72° CW |
-| `FR-` | Høyre-fremre flate, 72° CCW |
+| `R` | Høyre flate, 72° CW |
+| `R-` | Høyre flate, 72° CCW |
 | `U` | Topp, 72° CW |
 | `U++` | Topp, 144° CW |
 | `U--` | Topp, 144° CCW |
 | `U-` | Topp, 72° CCW |
-| `FL` | Venstre-fremre flate |
+| `UL` | Øvre-venstre flate (bak-venstre) |
 | `AUF_n` | n × U (72° CW), brukt som konjugat-setup |
 
 ---

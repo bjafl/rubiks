@@ -8,12 +8,12 @@
 
 | Navn | Sekvens | Bevegelse |
 |------|---------|-----------|
-| **EP** | `FR++ U-- FR-- U- FR++ U-- FR--` | 3-sykel kanter (mot klokken) |
-| **EP⁻¹** | `FR++ U++ FR-- U FR++ U++ FR--` | 3-sykel kanter (med klokken) |
-| **Niklas** | `FR U- FL- U FR- U- FL U` | 3-sykel hjørner A→C→B |
-| **Niklas⁻¹** | `U- FL- U FR U- FL U FR-` | 3-sykel hjørner A→B→C |
-| **Sune** | `FR U FR- U FR U-- FR-` | CO: +1 til 3 hjørner |
-| **Anti-Sune** | `FR- U- FR U- FR- U++ FR` | CO: +2 til 3 hjørner |
+| **EP** | `R++ U-- R-- U- R++ U-- R--` | 3-sykel kanter (mot klokken) |
+| **EP⁻¹** | `R++ U++ R-- U R++ U++ R--` | 3-sykel kanter (med klokken) |
+| **Niklas** | `R U- UL- U R- U- UL U` | 3-sykel hjørner A→C→B |
+| **Niklas⁻¹** | `U- UL- U R U- UL U R-` | 3-sykel hjørner A→B→C |
+| **Sune** | `R U R- U R U-- R-` | CO: +1 til 3 hjørner |
+| **Anti-Sune** | `R- U- R U- R- U++ R` | CO: +2 til 3 hjørner |
 
 ---
 
@@ -47,11 +47,11 @@ Niklas tvister de 3 syklerte hjørnene med +1 (72°-geometri). CO-steget absorbe
 ### Niklas fixed corners
 
 ```
-Posisjon 1   FR-hjørne   ← fast
-Posisjon 3   FL-hjørne   ← fast
+Posisjon 1   R-hjørne   ← fast
+Posisjon 3   UL-hjørne   ← fast
 ```
 
-De to hjørnene som Niklas *ikke* beveger er alltid i FL- og FR-sporet.
+De to hjørnene som Niklas *ikke* beveger er alltid i UL- og R-sporet.
 
 ### Gjenkjenning
 
@@ -77,8 +77,8 @@ Tell topp-hjørner på riktig plass (uavhengig av orientering).
 ### Sune og Anti-Sune
 
 ```
-Sune:       FR U FR- U FR U-- FR-    (+1 til 3 hjørner)
-Anti-Sune:  FR- U- FR U- FR- U++ FR  (+2 til 3 hjørner)
+Sune:       R U R- U R U-- R-    (+1 til 3 hjørner)
+Anti-Sune:  R- U- R U- R- U++ R  (+2 til 3 hjørner)
 ```
 
 > ⚠️ **Megaminx ≠ 3×3 for CO:** På 3×3 er Sune ren CO (beveger bare hjørneorienteringer). På Megaminx beveger Sune og Anti-Sune OGSÅ topp-hjørner og topp-kanter som bieffekt (72°-geometri). Etter CO er kanter og hjørneposisjoner forstyrret og trenger en ekstra EP/CP-sjekk.
@@ -145,6 +145,6 @@ Forventet apps per løsning: **5–9** (inkl. EP-fix etter CO)
 |---|---|
 | `U` / `U-` | Topp 72° med/mot klokken |
 | `U++` / `U--` | Topp 144° med/mot klokken |
-| `FR` / `FR-` | Høyre-fremre 72° med/mot klokken |
-| `FL` / `FL-` | Venstre-fremre |
+| `R` / `R-` | Høyre flate, 72° med/mot klokken |
+| `UL` / `UL-` | Øvre-venstre flate (bak-venstre) |
 | `++` | Dobbel (144°), kan skrives som `2` i noen notasjoner |
