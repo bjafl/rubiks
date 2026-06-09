@@ -22,38 +22,38 @@ Standardorientering: **hvit topp (U), grønn front (F)**.
 ```
           U
         /   \
-      FL  F  FR
+      UL  F  R
       |         |
-      BL       BR
+      DL       L
         \   /
-      DFL DFR
+      B   DR
       |         |
-      DBL      DBR
+      BL      BR
         \   /
           D
 ```
 
 **Øvre krone** (U + 5 sideflater):
 
-| Forkortelse | Fullt navn    | Posisjon (sett forfra) |
-|-------------|---------------|------------------------|
-| U           | Up            | Topp                   |
-| F           | Front         | Rett foran deg         |
-| FR          | Front-Right   | Fremre høyre           |
-| BR          | Back-Right    | Bakre høyre            |
-| BL          | Back-Left     | Bakre venstre          |
-| FL          | Front-Left    | Fremre venstre         |
+| Forkortelse | Fullt navn    | Posisjon (sett forfra)       |
+|-------------|---------------|------------------------------|
+| U           | Up            | Topp                         |
+| F           | Front         | Rett foran deg               |
+| R           | Right         | Høyre side                   |
+| L           | Left          | Venstre side                 |
+| DL          | Down-Left     | Fremre venstre (D-nabo)      |
+| UL          | Upper-Left    | Bakre venstre (U-nabo)       |
 
 **Nedre krone** (D + 5 sideflater):
 
-| Forkortelse | Fullt navn        | Posisjon (sett forfra) |
-|-------------|-------------------|------------------------|
-| DFR         | Down-Front-Right  | Nedre fremre høyre     |
-| DR          | Down-Right        | Nedre høyre            |
-| DBR         | Down-Back-Right   | Nedre bakre høyre      |
-| DBL         | Down-Back-Left    | Nedre bakre venstre    |
-| DFL         | Down-Front-Left   | Nedre fremre venstre   |
-| D           | Down              | Bunn                   |
+| Forkortelse | Fullt navn        | Posisjon (sett forfra)       |
+|-------------|-------------------|------------------------------|
+| DR          | Down-Right        | Fremre høyre (D-nabo)        |
+| UR          | Upper-Right       | Bakre høyre (U-nabo)         |
+| BR          | Back-Right        | Bakre høyre                  |
+| BL          | Back-Left         | Bakre venstre                |
+| B           | Back              | Bakside (bak-bunn)           |
+| D           | Down              | Bunn                         |
 
 ### SSE-notasjon – 12 flater (Randelshofer)
 
@@ -91,21 +91,21 @@ Brukes i løsningsalgoritmer, tutorialer og speedcubing-fellesskapet.
 ```
 U          – topp CW
 R'         – høyre CCW
-FR2        – fremre-høyre dobbelt CW
-DFL'       – nedre fremre venstre CCW
+R++        – høyre dobbelt CW
+B-         – bak CCW
 ```
 
 ### Typisk algoritmeeksempel
 
 EP-alg (kantpermutasjon, WCA-orientering):
 ```
-FR++ U-- FR-- U-- FR++ U-- FR--
+R++ U-- R-- U- R++ U-- R--
 ```
 Her brukes `++` og `--` (se WCA-scramblenotasjon nedenfor) – noen algoritmer blander systemene for nedre-kronn-trekk.
 
 Niklas (CP):
 ```
-FR U' FL' U FR' U' FL U
+R U- UL- U R- U- UL U
 ```
 
 ### Repetisjon og gruppering
@@ -224,10 +224,10 @@ I dette prosjektet brukes **WCA algoritmenotasjon** for flatnavn.
 
 `FACE_NAMES` i `megaminx/moves.py`:
 ```python
-["U", "F", "FR", "BR", "BL", "FL", "DFR", "DR", "DBR", "DBL", "DFL", "D"]
+["U", "F", "R", "L", "DL", "UL", "DR", "UR", "BR", "BL", "B", "D"]
 ```
 
-Tilgjengelige trekk: `<flate>` (CW) og `<flate>-` (CCW), f.eks. `U`, `U-`, `FR`, `FR-`.
+Tilgjengelige trekk: `<flate>` (CW) og `<flate>-` (CCW), f.eks. `U`, `U-`, `R`, `R-`.
 
 ---
 

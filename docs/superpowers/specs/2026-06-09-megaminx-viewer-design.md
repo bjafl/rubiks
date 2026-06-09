@@ -58,7 +58,7 @@ viewer/
 │  ⏮  ◀  ▶  ▶▶  ⏭   0.8×  4/11  │  Niklas / EP1/EP2   │
 └─────────────────────────────────│─────────────────────│
                                   │  [fritekst-input]   │
-                                  │  FR U++ FR-…   [▶]  │
+                                  │  R U++ R-…     [▶]  │
                                   └────────────────────┘
 ```
 
@@ -97,7 +97,7 @@ viewer/
 // Ny sekvens lastet inn
 { "type": "loaded",
   "algName": "CO9",               // null for fritekst
-  "moves":   ["FR","U++","FR-",...]
+  "moves":   ["R","U++","R-",...]
 }
 
 // Tilbakestilt
@@ -157,7 +157,7 @@ class SessionState:
 - Dodekahedral geometri bygges ved oppstart fra `viewer/geometry.json` — genereres av Python (`mcp_server/gen_geometry.py`) og sjekkes inn i repo
 - Hvert ansikt har 11 synlige brikker (1 center + 5 kanter + 5 hjørner)
 - Ansiktsrotasjon: roterer en `THREE.Group` med alle 11 brikker 72°/144° rundt ansiktsnormalen via lineær interpolasjon i `requestAnimationFrame` (ingen ekstern animasjonsbibliotek)
-- Farger: fast fargekart (U=gul, F=grønn, FR=oransje, ...) — samme som prosjektets eksisterende visualiseringer
+- Farger: fast fargekart (U=gul, F=grønn, R=oransje, ...) — samme som prosjektets eksisterende visualiseringer
 
 ---
 
