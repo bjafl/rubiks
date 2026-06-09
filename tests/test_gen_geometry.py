@@ -42,6 +42,7 @@ def test_geometry_edge_counts():
     g = json.loads(GEOMETRY_PATH.read_text())
     assert len(g["edgeFaces"]) == 30
     assert all(len(ef) == 2 for ef in g["edgeFaces"])
+    assert len(g["faceEdgeCycles"]) == 12
     assert all(len(ec) == 5 for ec in g["faceEdgeCycles"])
 
 
