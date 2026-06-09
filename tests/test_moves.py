@@ -48,3 +48,29 @@ def test_result_state_is_valid():
         result = apply_move(SOLVED_STATE.copy(), move)
         r = validate_state(result)
         assert r.valid, f"Move {move!r} produced invalid state: {r.errors}"
+
+
+from megaminx.moves import get_geometry_data, FACE_NAMES
+
+def test_get_geometry_data_structure():
+    g = get_geometry_data()
+    for key in ["face_names", "face_vertices", "face_centers",
+                "face_corner_cycles", "face_edge_cycles", "corner_faces", "edge_faces"]:
+        assert key in g, f"Missing key: {key}"
+
+def test_get_geometry_data_counts():
+    g = get_geometry_data()
+    assert len(g["face_names"]) == 12
+    assert len(g["face_vertices"]) == 12
+    assert all(len(fv) == 5 for fv in g["face_vertices"])
+    assert all(len(v) == 3 for fv in g["face_vertices"] for v in fv)
+    assert len(g["face_corner_cycles"]) == 12
+    assert all(len(cc) == 5 for cc in g["face_corner_cycles"])
+    assert len(g["corner_faces"]) == 20
+    assert all(len(cf) == 3 for cf in g["corner_faces"])
+    assert len(g["edge_faces"]) == 30
+    assert all(len(ef) == 2 for ef in g["edge_faces"])
+
+def test_get_geometry_data_face_names_match():
+    g = get_geometry_data()
+    assert g["face_names"] == FACE_NAMES

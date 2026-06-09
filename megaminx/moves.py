@@ -298,3 +298,16 @@ def apply_sequence(state: MegaminxState, moves: list[str]) -> MegaminxState:
 
 
 ALL_MOVES = [f + s for f in FACE_NAMES for s in ("", "-")]
+
+
+def get_geometry_data() -> dict:
+    """Return dodecahedron geometry and piece-slot mappings as plain Python types."""
+    return {
+        "face_names":        list(FACE_NAMES),
+        "face_vertices":     [[_RAW_VERTS[v].tolist() for v in fv] for fv in _FACE_VERTS],
+        "face_centers":      [c.tolist() for c in _face_centers],
+        "face_corner_cycles": [list(MOVE_TABLE[fi]["corner_cycle"]) for fi in range(12)],
+        "face_edge_cycles":   [list(MOVE_TABLE[fi]["edge_cycle"])   for fi in range(12)],
+        "corner_faces":      [list(cf) for cf in CORNER_FACES],
+        "edge_faces":        [list(ef) for ef in EDGE_FACES],
+    }
