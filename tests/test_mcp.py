@@ -42,8 +42,8 @@ def test_apply_move_invalid_raises():
         srv.tool_apply_move("BOGUS")
 
 def test_apply_sequence_and_inverse():
-    srv.tool_apply_sequence(["U", "F", "FR"])
-    srv.tool_apply_sequence(["FR-", "F-", "U-"])
+    srv.tool_apply_sequence(["U", "F", "R"])
+    srv.tool_apply_sequence(["R-", "F-", "U-"])
     assert srv.tool_is_solved() is True
 
 def test_undo():
@@ -111,7 +111,7 @@ def test_tool_viewer_load_algorithm_unknown_raises():
 
 def test_tool_viewer_animate_sequence():
     from mcp_server.server import tool_viewer_animate_sequence
-    result = tool_viewer_animate_sequence("FR U++ FR- U-")
+    result = tool_viewer_animate_sequence("R U++ R- U-")
     assert result["ok"] is True
 
 

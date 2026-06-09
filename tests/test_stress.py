@@ -73,14 +73,14 @@ def _apply(seq: list[str]):
 # ── named LL algorithms (verified correct) ─────────────────────────────────────
 
 _LL_ALGS: dict[str, list[str]] = {
-    "Sune":       ["FR", "U", "FR-", "U", "FR", "U--", "FR-"],
-    "Anti-Sune":  ["FR-", "U-", "FR", "U-", "FR-", "U++", "FR"],
-    "Niklas":     ["FR", "U-", "FL-", "U", "FR-", "U-", "FL", "U"],
-    "Niklas-inv": ["U-", "FL-", "U", "FR", "U-", "FL", "U", "FR-"],
-    "EP1":        ["FR++", "U--", "FR--", "U-", "FR++", "U--", "FR--"],
-    "EP2":        ["FR++", "U++", "FR--", "U", "FR++", "U++", "FR--"],
-    "CO9":        ["FR", "U++", "FR-", "U-", "FR", "U", "FR-", "U-", "FR", "U-", "FR-"],
-    "CO10":       ["FR", "U", "FR-", "U", "FR", "U-", "FR-", "U", "FR", "U--", "FR-"],
+    "Sune":       ["R", "U", "R-", "U", "R", "U--", "R-"],
+    "Anti-Sune":  ["R-", "U-", "R", "U-", "R-", "U++", "R"],
+    "Niklas":     ["R", "U-", "UL-", "U", "R-", "U-", "UL", "U"],
+    "Niklas-inv": ["U-", "UL-", "U", "R", "U-", "UL", "U", "R-"],
+    "EP1":        ["R++", "U--", "R--", "U-", "R++", "U--", "R--"],
+    "EP2":        ["R++", "U++", "R--", "U", "R++", "U++", "R--"],
+    "CO9":        ["R", "U++", "R-", "U-", "R", "U", "R-", "U-", "R", "U-", "R-"],
+    "CO10":       ["R", "U", "R-", "U", "R", "U-", "R-", "U", "R", "U--", "R-"],
 }
 
 # ── 1. Random sequence closure ─────────────────────────────────────────────────
@@ -251,7 +251,7 @@ def test_anti_sune_correct_co_effect():
 
 # Restrict scramble + solver to a small subset to keep test time reasonable.
 # 6 faces × 4 suffixes but only U-ring (top layer) moves to stay shallow.
-_SHALLOW_MOVES = [f + s for f in ["U", "F", "FR", "FL"] for s in ("", "-", "++", "--")]
+_SHALLOW_MOVES = [f + s for f in ["U", "F", "R", "UL"] for s in ("", "-", "++", "--")]
 
 
 @pytest.mark.parametrize("seed", range(30))

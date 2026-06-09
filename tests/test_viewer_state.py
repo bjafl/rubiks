@@ -27,7 +27,7 @@ def test_load_sequence_resets_to_solved():
 
 def test_step_forward_advances_index():
     vs = ViewerState()
-    vs.load_sequence(["U", "FR"], alg_name="test")
+    vs.load_sequence(["U", "R"], alg_name="test")
     vs.step_forward()
     snap = vs.state_snapshot()
     assert snap["moveIndex"] == 1
@@ -43,7 +43,7 @@ def test_step_forward_at_end_returns_false():
 
 def test_step_backward_reverses():
     vs = ViewerState()
-    vs.load_sequence(["U", "FR"])
+    vs.load_sequence(["U", "R"])
     vs.step_forward()
     vs.step_forward()
     vs.step_backward()
@@ -77,7 +77,7 @@ def test_rewind_to_clamps():
 
 def test_reset_clears_everything():
     vs = ViewerState()
-    vs.load_sequence(["U", "FR"], alg_name="X")
+    vs.load_sequence(["U", "R"], alg_name="X")
     vs.step_forward()
     vs.reset()
     snap = vs.state_snapshot()
@@ -87,16 +87,16 @@ def test_reset_clears_everything():
 
 
 def test_parse_sequence_valid():
-    assert parse_sequence("FR U++ FR- U-") == ["FR", "U++", "FR-", "U-"]
+    assert parse_sequence("R U++ R- U-") == ["R", "U++", "R-", "U-"]
 
 
 def test_parse_sequence_strips_whitespace():
-    assert parse_sequence("  U   FR-  ") == ["U", "FR-"]
+    assert parse_sequence("  U   R-  ") == ["U", "R-"]
 
 
 def test_parse_sequence_rejects_bad_move():
     with pytest.raises(ValueError):
-        parse_sequence("FR XYZ U")
+        parse_sequence("R XYZ U")
 
 
 def test_state_snapshot_current_move_none_at_start():
@@ -107,6 +107,6 @@ def test_state_snapshot_current_move_none_at_start():
 
 def test_state_snapshot_current_move_after_step():
     vs = ViewerState()
-    vs.load_sequence(["U", "FR-"])
+    vs.load_sequence(["U", "R-"])
     vs.step_forward()
     assert vs.state_snapshot()["currentMove"] == "U"

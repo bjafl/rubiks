@@ -24,13 +24,13 @@ def test_each_algorithm_produces_valid_state():
 def test_sune_six_times_is_identity():
     """Megaminx sexy move applied 6 times = identity.
 
-    On a Megaminx (5-fold symmetry), the 'sexy move' [U, FR, U-, FR-] has
+    On a Megaminx (5-fold symmetry), the 'sexy move' [U, R, U-, R-] has
     order 6, which validates the orientation model end-to-end.
     (The cube Sune has order 6 on a 3x3, but order 60 on a Megaminx due to
     the 72° turn geometry.)
     """
     from megaminx.model import is_solved
-    sexy_move = ["U", "FR", "U-", "FR-"]
+    sexy_move = ["U", "R", "U-", "R-"]
     state = SOLVED_STATE.copy()
     for _ in range(6):
         state = apply_sequence(state, sexy_move)
@@ -40,13 +40,13 @@ def test_sune_six_times_is_identity():
 def test_single_algs_has_co9():
     assert "CO9" in SINGLE_ALGS
     assert SINGLE_ALGS["CO9"] == [
-        "FR", "U++", "FR-", "U-", "FR", "U", "FR-", "U-", "FR", "U-", "FR-"
+        "R", "U++", "R-", "U-", "R", "U", "R-", "U-", "R", "U-", "R-"
     ]
 
 def test_single_algs_has_co10():
     assert "CO10" in SINGLE_ALGS
     assert SINGLE_ALGS["CO10"] == [
-        "FR", "U", "FR-", "U", "FR", "U-", "FR-", "U", "FR", "U--", "FR-"
+        "R", "U", "R-", "U", "R", "U-", "R-", "U", "R", "U--", "R-"
     ]
 
 def test_single_algs_has_niklas():

@@ -26,7 +26,7 @@ def test_undo_past_initial_is_noop():
 
 def test_undo_stack_max_size():
     s = SessionState(max_history=3)
-    for move in ["U", "F", "FR", "BL", "D"]:
+    for move in ["U", "F", "R", "DL", "D"]:
         s.push(apply_move(s.state, move))
     # Only last 3 states kept
     for _ in range(10):

@@ -16,14 +16,14 @@ def test_solve_one_move():
     assert is_solved(result)
 
 def test_solve_two_moves():
-    scrambled = apply_sequence(SOLVED_STATE.copy(), ["F", "FR"])
+    scrambled = apply_sequence(SOLVED_STATE.copy(), ["F", "R"])
     solution = solve_path(scrambled, SOLVED_STATE.copy(), max_depth=5)
     assert solution is not None
     result = apply_sequence(scrambled, solution)
     assert is_solved(result)
 
 def test_solve_three_moves():
-    scrambled = apply_sequence(SOLVED_STATE.copy(), ["U", "F", "FR-"])
+    scrambled = apply_sequence(SOLVED_STATE.copy(), ["U", "F", "R-"])
     solution = solve_path(scrambled, SOLVED_STATE.copy(), max_depth=6)
     assert solution is not None
     assert len(solution) <= 6
@@ -31,7 +31,7 @@ def test_solve_three_moves():
     assert is_solved(result)
 
 def test_solve_returns_none_when_too_deep():
-    scrambled = apply_sequence(SOLVED_STATE.copy(), ["U", "F", "FR", "BR", "BL"])
+    scrambled = apply_sequence(SOLVED_STATE.copy(), ["U", "F", "R", "L", "DL"])
     result = solve_path(scrambled, SOLVED_STATE.copy(), max_depth=2)
     # max_depth=2 is too shallow for a 5-move scramble
     assert result is None
