@@ -1,6 +1,7 @@
 # tests/test_algorithms.py
 from megaminx.algorithms import ALGORITHM_SETS, list_algorithms, get_algorithm_set
-from megaminx.model import SOLVED_STATE, validate_state
+from megaminx.algorithms import get_library, SINGLE_ALGS, LIBRARY_ORDER
+from megaminx.model import SOLVED_STATE, validate_state, is_solved
 from megaminx.moves import apply_sequence
 
 def test_list_algorithms_returns_dict():
@@ -35,7 +36,6 @@ def test_sune_six_times_is_identity():
         state = apply_sequence(state, sexy_move)
     assert is_solved(state), "Sexy move × 6 should return to solved"
 
-from megaminx.algorithms import get_library, SINGLE_ALGS, LIBRARY_ORDER
 
 def test_single_algs_has_co9():
     assert "CO9" in SINGLE_ALGS
@@ -77,3 +77,26 @@ def test_get_library_entries_have_moves():
 def test_library_order_constant():
     assert LIBRARY_ORDER[0] == "CO9"
     assert LIBRARY_ORDER[1] == "CO10"
+
+
+def test_niklas_and_inv_cancel():
+    """NIKLAS followed by NIKLAS_INV should return to solved state."""
+    state = apply_sequence(SOLVED_STATE.copy(), SINGLE_ALGS["NIKLAS"])
+    state = apply_sequence(state, SINGLE_ALGS["NIKLAS_INV"])
+    assert is_solved(state), "NIKLAS + NIKLAS_INV should return to solved"
+
+
+def test_ep1_and_ep2_cancel():
+    """EP1 followed by EP2 should return to solved state."""
+    state = apply_sequence(SOLVED_STATE.copy(), SINGLE_ALGS["EP1"])
+    state = apply_sequence(state, SINGLE_ALGS["EP2"])
+    assert is_solved(state), "EP1 + EP2 should return to solved"
+
+
+def test_get_library_moves_are_copies():
+    """Mutating get_library() entries must not corrupt SINGLE_ALGS."""
+    original = list(SINGLE_ALGS["CO9"])
+    lib = get_library()
+    entry = next(e for e in lib if e["name"] == "CO9")
+    entry["moves"].append("EXTRA")
+    assert SINGLE_ALGS["CO9"] == original, "get_library() must return copies, not references"

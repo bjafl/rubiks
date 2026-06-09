@@ -46,14 +46,14 @@ SINGLE_ALGS: dict[str, list[str]] = {
     "SLEDGE":     ["FR-", "F", "FR", "F-"],
 }
 
-LIBRARY_ORDER = [
+LIBRARY_ORDER: list[str] = [
     "CO9", "CO10", "SUNE", "ANTI_SUNE", "NIKLAS", "NIKLAS_INV", "EP1", "EP2",
 ]
 
 
 def get_library() -> list[dict]:
     """Return algorithms in display order for the viewer library."""
-    return [{"name": n, "moves": SINGLE_ALGS[n]} for n in LIBRARY_ORDER]
+    return [{"name": n, "moves": list(SINGLE_ALGS[n])} for n in LIBRARY_ORDER]
 
 
 def list_algorithms() -> dict[str, list[list[str]]]:
