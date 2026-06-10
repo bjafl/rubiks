@@ -3,8 +3,8 @@
 # Each set is a list of move sequences (each sequence = list[str]).
 #
 # WCA Megaminx face notation:
-#   R  -> right face (solver's right, adjacent to F)
-#   UL -> upper-left face (back-left, adjacent to U)
+#   R  -> right face (solver's right, adjacent to U and F)
+#   BR -> back-right face (adjacent to U and R)
 #   U  -> top face
 #   F  -> front face
 
@@ -15,10 +15,10 @@ ALGORITHM_SETS: dict[str, list[list[str]]] = {
         ["R-", "U-", "R", "U-", "R-", "U++", "R"],         # Anti-Sune
         ["R", "U++", "R-", "U-", "R", "U-", "R-"],         # Double Sune variant
     ],
-    # Corner Permutation algorithms
+    # Corner Permutation algorithms (L and BR are non-adjacent U-ring faces)
     "CP_ALGS": [
-        ["R", "U-", "UL-", "U", "R-", "U-", "UL", "U"],   # Diagonal corner swap
-        ["U", "R", "U-", "UL-", "U", "R-", "U-", "UL"],   # Adjacent corner swap
+        ["L", "U-", "BR-", "U", "L-", "U-", "BR", "U"],   # Diagonal corner swap
+        ["U", "L", "U-", "BR-", "U", "L-", "U-", "BR"],   # Adjacent corner swap
     ],
     # Last Layer combined
     "LL_ALGS": [
@@ -37,8 +37,8 @@ SINGLE_ALGS: dict[str, list[str]] = {
     "CO10":       ["R", "U", "R-", "U", "R", "U-", "R-", "U", "R", "U--", "R-"],
     "SUNE":       ["R", "U", "R-", "U", "R", "U--", "R-"],
     "ANTI_SUNE":  ["R-", "U-", "R", "U-", "R-", "U++", "R"],
-    "NIKLAS":     ["R", "U-", "UL-", "U", "R-", "U-", "UL", "U"],
-    "NIKLAS_INV": ["U-", "UL-", "U", "R", "U-", "UL", "U", "R-"],
+    "NIKLAS":     ["L", "U-", "BR-", "U", "L-", "U-", "BR", "U"],
+    "NIKLAS_INV": ["U-", "BR-", "U", "L", "U-", "BR", "U", "L-"],
     "EP1":        ["R++", "U--", "R--", "U-", "R++", "U--", "R--"],
     "EP2":        ["R++", "U++", "R--", "U", "R++", "U++", "R--"],
     "SEXY":       ["R", "U", "R-", "U-"],

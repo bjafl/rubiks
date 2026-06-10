@@ -31,25 +31,25 @@ def test_f_is_frontmost_of_u_ring():
 
 
 def test_r_is_right_side():
-    """R: x- direction (solver's right), z≈0."""
-    assert c("R")[0] < -1.0
+    """R: x+ direction (solver's right when facing F), z≈0."""
+    assert c("R")[0] > 1.0
 
 
 def test_l_is_left_side():
-    """L: x+ direction (solver's left), z≈0."""
-    assert c("L")[0] > 1.0
+    """L: x- direction (solver's left when facing F), z≈0."""
+    assert c("L")[0] < -1.0
 
 
-def test_ul_is_back_left():
-    """UL: U-adjacent, back (z+) and left (x+)."""
-    assert c("UL")[2] > 1.0
-    assert c("UL")[0] > 0
+def test_br_is_back_right_upper():
+    """BR: U-adjacent, back (z+) and right (x+)."""
+    assert c("BR")[2] > 1.0
+    assert c("BR")[0] > 0
 
 
-def test_ur_is_back_right():
-    """UR: U-adjacent, back (z+) and right (x-)."""
-    assert c("UR")[2] > 1.0
-    assert c("UR")[0] < 0
+def test_bl_is_back_left_upper():
+    """BL: U-adjacent, back (z+) and left (x-)."""
+    assert c("BL")[2] > 1.0
+    assert c("BL")[0] < 0
 
 
 def test_b_is_backmost_of_d_ring():
@@ -57,9 +57,21 @@ def test_b_is_backmost_of_d_ring():
     assert c("B")[2] > 0
 
 
+def test_ul_is_upper_left_of_d_ring():
+    """UL: D-adjacent, on x+ side (upper-left from D's perspective)."""
+    assert c("UL")[0] > 1.0
+    assert c("UL")[1] < 0
+
+
+def test_ur_is_upper_right_of_d_ring():
+    """UR: D-adjacent, on x- side (upper-right from D's perspective)."""
+    assert c("UR")[0] < -1.0
+    assert c("UR")[1] < 0
+
+
 def test_opposite_pairs_sum_to_zero():
-    """WCA opposite pairs: U↔D, F↔B, R↔BL, L↔BR, UL↔DR, UR↔DL."""
-    pairs = [("U", "D"), ("F", "B"), ("R", "BL"), ("L", "BR"), ("UL", "DR"), ("UR", "DL")]
+    """WCA opposite pairs: U↔D, F↔B, R↔UR, L↔UL, BR↔DR, BL↔DL."""
+    pairs = [("U", "D"), ("F", "B"), ("R", "UR"), ("L", "UL"), ("BR", "DR"), ("BL", "DL")]
     for a, b in pairs:
         s = c(a) + c(b)
         assert np.linalg.norm(s) < 1e-6, f"Pair {a}↔{b} not antipodal: sum={s}"

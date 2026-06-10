@@ -75,8 +75,8 @@ def _apply(seq: list[str]):
 _LL_ALGS: dict[str, list[str]] = {
     "Sune":       ["R", "U", "R-", "U", "R", "U--", "R-"],
     "Anti-Sune":  ["R-", "U-", "R", "U-", "R-", "U++", "R"],
-    "Niklas":     ["R", "U-", "UL-", "U", "R-", "U-", "UL", "U"],
-    "Niklas-inv": ["U-", "UL-", "U", "R", "U-", "UL", "U", "R-"],
+    "Niklas":     ["L", "U-", "BR-", "U", "L-", "U-", "BR", "U"],
+    "Niklas-inv": ["U-", "BR-", "U", "L", "U-", "BR", "U", "L-"],
     "EP1":        ["R++", "U--", "R--", "U-", "R++", "U--", "R--"],
     "EP2":        ["R++", "U++", "R--", "U", "R++", "U++", "R--"],
     "CO9":        ["R", "U++", "R-", "U-", "R", "U", "R-", "U-", "R", "U-", "R-"],
@@ -251,7 +251,7 @@ def test_anti_sune_correct_co_effect():
 
 # Restrict scramble + solver to a small subset to keep test time reasonable.
 # 6 faces × 4 suffixes but only U-ring (top layer) moves to stay shallow.
-_SHALLOW_MOVES = [f + s for f in ["U", "F", "R", "UL"] for s in ("", "-", "++", "--")]
+_SHALLOW_MOVES = [f + s for f in ["U", "F", "R", "BR"] for s in ("", "-", "++", "--")]
 
 
 @pytest.mark.parametrize("seed", range(30))

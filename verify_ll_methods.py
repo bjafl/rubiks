@@ -168,8 +168,8 @@ check_alg("EP 1", "R++ U-- R-- U- R++ U-- R--", "3-sykel kanter mot klokken")
 check_alg("EP 1⁻¹", "R++ U++ R-- U R++ U++ R--", "3-sykel kanter med klokken")
 
 section("METODE 1+3 — CP / Niklas (hjørnepermutasjon)")
-check_alg("Niklas", "R U- UL- U R- U- UL U", "3-sykel hjørner, +1 twist")
-check_alg("Niklas⁻¹", "U- UL- U R U- UL U R-", "invers 3-sykel hjørner")
+check_alg("Niklas", "L U- BR- U L- U- BR U", "3-sykel hjørner, +1 twist")
+check_alg("Niklas⁻¹", "U- BR- U L U- BR U L-", "invers 3-sykel hjørner")
 
 section("METODE 1+3 — CO (hjørneorientering)")
 check_alg("Sune", "R U R- U R U-- R-", "+1 til 3 hjørner")
@@ -212,7 +212,7 @@ ep_algs = [
     ("EP 2",  "R++ U++ R-- U  R++ U++ R--"),
     ("EP 3",  "R U R- F- R U R- U- R- F R++ U- R-"),
     ("EP 4",  "R U R- U R- U- R++ U- R- U R- U R U++"),
-    ("EP 5",  "UL R U++ UL- U R- UL U- R U++ UL- U++ R-"),
+    ("EP 5",  "BR L U++ BR- U L- BR U- L U++ BR- U++ L-"),
 ]
 
 for label, moves in ep_algs:
@@ -228,8 +228,8 @@ identity = np.array_equal(s2.corners, SOLVED_STATE.corners) and np.array_equal(s
 print(f"  {'✓' if identity else '✗'} EP1 ∘ EP2 = identitet: {identity}")
 
 section("EKSTRA — Niklas ∘ Niklas⁻¹ = identitet?")
-s1 = apply("R U- UL- U R- U- UL U")
-s2 = apply("U- UL- U R U- UL U R-", s1)
+s1 = apply("L U- BR- U L- U- BR U")
+s2 = apply("U- BR- U L U- BR U L-", s1)
 identity = np.array_equal(s2.corners, SOLVED_STATE.corners) and np.array_equal(s2.edges, SOLVED_STATE.edges)
 print(f"  {'✓' if identity else '✗'} Niklas ∘ Niklas⁻¹ = identitet: {identity}")
 

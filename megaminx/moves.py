@@ -104,8 +104,8 @@ def _face_angle_around_y(fi: int) -> float:
 _u_ring = sorted(_u_neighbors, key=_face_angle_around_y)
 _d_ring = sorted(_d_neighbors, key=_face_angle_around_y)
 
-_WCA_U_RING = ["F", "R", "L", "DL", "UL"]
-_WCA_D_RING = ["DR", "UR", "BR", "BL", "B"]
+_WCA_U_RING = ["F", "L", "R", "DL", "BR"]
+_WCA_D_RING = ["DR", "BL", "UR", "UL", "B"]
 FACE_NAMES = (
     ["U"]
     + [_WCA_U_RING[i] for i in range(5)]
