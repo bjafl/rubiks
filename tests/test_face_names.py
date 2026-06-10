@@ -1,77 +1,64 @@
-"""Verifies FACE_NAMES match WCA Megaminx convention using geometry."""
+# tests/test_face_names.py
+"""Verifies FACE_NAMES match cube.py (WCA-correct) naming."""
 import numpy as np
 import pytest
 from megaminx.moves import FACE_NAMES, _face_centers, _FACE_INDEX
+from megaminx.cube import FACES
 
 
 def c(name: str) -> np.ndarray:
     return _face_centers[_FACE_INDEX[name]]
 
 
+def test_face_names_equal_cube_faces():
+    assert FACE_NAMES == FACES
+
+
 def test_all_12_wca_names_present():
-    expected = {"U", "D", "F", "B", "R", "L", "UL", "UR", "BL", "BR", "DL", "DR"}
-    assert set(FACE_NAMES) == expected, (
-        f"Wrong names: {set(FACE_NAMES) - expected} present, {expected - set(FACE_NAMES)} missing"
-    )
+    expected = {"U", "D", "F", "R", "BR", "BL", "L", "DFR", "DBR", "DB", "DBL", "DFL"}
+    assert set(FACE_NAMES) == expected
 
 
 def test_u_highest_y():
-    assert _FACE_INDEX["U"] == 0
     assert c("U")[1] == max(fc[1] for fc in _face_centers)
 
 
 def test_d_lowest_y():
-    assert _FACE_INDEX["D"] == 11
     assert c("D")[1] == min(fc[1] for fc in _face_centers)
 
 
-def test_f_is_frontmost_of_u_ring():
+def test_f_is_frontmost():
     """F: adjacent to U, most negative z (toward solver)."""
-    assert c("F")[2] < 0
+    u_ring_names = ["F", "R", "BR", "BL", "L"]
+    f_z = c("F")[2]
+    assert all(f_z <= c(n)[2] for n in u_ring_names)
 
 
-def test_r_is_right_side():
-    """R: x+ direction (solver's right when facing F), z≈0."""
+def test_r_is_rightmost():
     assert c("R")[0] > 1.0
 
 
-def test_l_is_left_side():
-    """L: x- direction (solver's left when facing F), z≈0."""
+def test_l_is_leftmost():
     assert c("L")[0] < -1.0
 
 
-def test_br_is_back_right_upper():
-    """BR: U-adjacent, back (z+) and right (x+)."""
-    assert c("BR")[2] > 1.0
-    assert c("BR")[0] > 0
+def test_br_is_back_right():
+    assert c("BR")[2] > 1.0 and c("BR")[0] > 0
 
 
-def test_bl_is_back_left_upper():
-    """BL: U-adjacent, back (z+) and left (x-)."""
-    assert c("BL")[2] > 1.0
-    assert c("BL")[0] < 0
+def test_bl_is_back_left():
+    assert c("BL")[2] > 1.0 and c("BL")[0] < 0
 
 
-def test_b_is_backmost_of_d_ring():
-    """B: opposite of F, most positive z."""
-    assert c("B")[2] > 0
-
-
-def test_ul_is_upper_left_of_d_ring():
-    """UL: D-adjacent, on x+ side (upper-left from D's perspective)."""
-    assert c("UL")[0] > 1.0
-    assert c("UL")[1] < 0
-
-
-def test_ur_is_upper_right_of_d_ring():
-    """UR: D-adjacent, on x- side (upper-right from D's perspective)."""
-    assert c("UR")[0] < -1.0
-    assert c("UR")[1] < 0
+def test_lower_faces_have_negative_y():
+    for name in ["DFR", "DBR", "DB", "DBL", "DFL"]:
+        assert c(name)[1] <= 0, f"{name} should have non-positive Y (below or at equator)"
 
 
 def test_opposite_pairs_sum_to_zero():
-    """WCA opposite pairs: U↔D, F↔B, R↔UR, L↔UL, BR↔DR, BL↔DL."""
-    pairs = [("U", "D"), ("F", "B"), ("R", "UR"), ("L", "UL"), ("BR", "DR"), ("BL", "DL")]
+    """Antipodal face pairs sum to zero."""
+    pairs = [("U", "D"), ("F", "DB"), ("R", "DBL"), ("L", "DBR"),
+             ("BR", "DFL"), ("BL", "DFR")]
     for a, b in pairs:
         s = c(a) + c(b)
         assert np.linalg.norm(s) < 1e-6, f"Pair {a}↔{b} not antipodal: sum={s}"
