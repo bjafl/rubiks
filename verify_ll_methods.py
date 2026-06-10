@@ -3,108 +3,80 @@ Verifiserer alle LL-algoritmer fra megaminx-ll-metode{1-3,4}.md
 mot Megaminx-simulatoren.
 """
 from __future__ import annotations
-import numpy as np
-from megaminx import SOLVED_STATE
+from megaminx.cube import SOLVED, MegaminxState, CORNERS, EDGES
 from megaminx.moves import apply_sequence
-from megaminx.model import MegaminxState
 
 # Top corner/edge indices (adjacent to U face)
-TOP_CORNERS = list(range(5))   # corners 0–4
-TOP_EDGES   = list(range(5))   # edges   0–4
-
-
-def copy_state(s: MegaminxState) -> MegaminxState:
-    return MegaminxState(s.corners.copy(), s.edges.copy())
+TOP_CORNERS = [i for i, c in enumerate(CORNERS) if "U" in c]   # [0, 4, 7, 18, 19]
+TOP_EDGES   = [i for i, e in enumerate(EDGES)   if "U" in e]   # [4, 8, 27, 28, 29]
 
 
 def apply(moves_str: str, state: MegaminxState | None = None) -> MegaminxState:
     """Apply a space-separated move string to a solved state (or given state)."""
     if state is None:
-        state = copy_state(SOLVED_STATE)
-    tokens = moves_str.split()
-    return apply_sequence(state, tokens)
+        state = SOLVED
+    return apply_sequence(state, moves_str.split())
 
 
 def delta_corners(state: MegaminxState) -> dict:
-    """Returns {slot: (original_piece, orientation)} for top corners that changed."""
-    solved = SOLVED_STATE
     result = {}
     for i in TOP_CORNERS:
-        orig_pos, orig_ori = solved.corners[i]
-        new_pos,  new_ori  = state.corners[i]
-        if orig_pos != new_pos or orig_ori != new_ori:
-            result[i] = (int(new_pos), int(new_ori))
+        if state.cp[i] != SOLVED.cp[i] or state.co[i] != SOLVED.co[i]:
+            result[i] = (state.cp[i], state.co[i])
     return result
 
 
 def delta_edges(state: MegaminxState) -> dict:
-    """Returns changed slots for top edges."""
-    solved = SOLVED_STATE
     result = {}
     for i in TOP_EDGES:
-        orig_pos, orig_ori = solved.edges[i]
-        new_pos,  new_ori  = state.edges[i]
-        if orig_pos != new_pos or orig_ori != new_ori:
-            result[i] = (int(new_pos), int(new_ori))
+        if state.ep[i] != SOLVED.ep[i] or state.eo[i] != SOLVED.eo[i]:
+            result[i] = (state.ep[i], state.eo[i])
     return result
 
 
 def non_top_moved(state: MegaminxState) -> bool:
-    """True if any non-top piece was disturbed."""
-    solved = SOLVED_STATE
-    for i in range(5, 20):
-        if not np.array_equal(state.corners[i], solved.corners[i]):
+    ll_c = frozenset(TOP_CORNERS)
+    ll_e = frozenset(TOP_EDGES)
+    for i in range(20):
+        if i not in ll_c and (state.cp[i] != i or state.co[i] != 0):
             return True
-    for i in range(5, 30):
-        if not np.array_equal(state.edges[i], solved.edges[i]):
+    for i in range(30):
+        if i not in ll_e and (state.ep[i] != i or state.eo[i] != 0):
             return True
     return False
 
 
 def is_pure_co(state: MegaminxState) -> tuple[bool, list[int]]:
-    """
-    True if top corners are all back to correct position (permutation unchanged)
-    but some are twisted. Returns (pure_co, [twist per top corner]).
-    """
-    solved = SOLVED_STATE
     twists = []
     for i in TOP_CORNERS:
-        if state.corners[i, 0] != solved.corners[i, 0]:
+        if state.cp[i] != SOLVED.cp[i]:
             return False, []
-        twists.append(int(state.corners[i, 1]))
+        twists.append(state.co[i])
     return True, twists
 
 
 def is_pure_ep(state: MegaminxState) -> tuple[bool, str]:
-    """
-    True if top edge positions changed but orientations are 0 and corners untouched.
-    Returns (pure_ep, cycle_description).
-    """
-    solved = SOLVED_STATE
-    # Corners must be untouched
     for i in TOP_CORNERS:
-        if not np.array_equal(state.corners[i], solved.corners[i]):
+        if state.cp[i] != SOLVED.cp[i] or state.co[i] != SOLVED.co[i]:
             return False, "corners moved"
-    # Edges: build permutation mapping
-    perm = []
+    perm = [state.ep[i] for i in TOP_EDGES]
     for i in TOP_EDGES:
-        perm.append(int(state.edges[i, 0]))  # which piece is at slot i
-        if state.edges[i, 1] != 0:
-            return False, f"edge {i} flipped (ori={state.edges[i,1]})"
-    # Describe cycle
+        if state.eo[i] != 0:
+            return False, f"edge slot {i} flipped"
     visited = [False] * 5
     cycles = []
     for start in range(5):
-        if visited[start] or perm[start] == start:
+        if visited[start] or perm[start] == TOP_EDGES[start]:
             visited[start] = True
             continue
         cycle = [start]
         visited[start] = True
-        cur = perm[start]
-        while cur != start:
+        cur = TOP_EDGES.index(perm[start]) if perm[start] in TOP_EDGES else -1
+        while cur != start and cur >= 0:
             cycle.append(cur)
             visited[cur] = True
-            cur = perm[cur]
+            next_val = perm[cur]
+            cur = TOP_EDGES.index(next_val) if next_val in TOP_EDGES else -1
         cycles.append(cycle)
     if not cycles:
         return True, "identity"
@@ -117,16 +89,11 @@ def check_alg(label: str, moves_str: str, expected: str):
     pure_co, twists = is_pure_co(state)
     pure_ep, ep_cycle = is_pure_ep(state)
 
-    # CP check: top corners permuted (but may be twisted), edges intact
-    edge_ok = all(np.array_equal(state.edges[i], SOLVED_STATE.edges[i]) for i in TOP_EDGES)
-    edge_non_top_ok = all(np.array_equal(state.edges[i], SOLVED_STATE.edges[i]) for i in range(5, 30))
+    corner_perm = [state.cp[i] for i in TOP_CORNERS]
+    corner_ori  = [state.co[i] for i in TOP_CORNERS]
+    edge_perm   = [state.ep[i] for i in TOP_EDGES]
+    edge_ori    = [state.eo[i] for i in TOP_EDGES]
 
-    corner_perm = [int(state.corners[i, 0]) for i in TOP_CORNERS]
-    corner_ori  = [int(state.corners[i, 1]) for i in TOP_CORNERS]
-    edge_perm   = [int(state.edges[i, 0]) for i in TOP_EDGES]
-    edge_ori    = [int(state.edges[i, 1]) for i in TOP_EDGES]
-
-    # Format output
     status_parts = []
     if nt:
         status_parts.append("⚠️  NON-TOP PIECES MOVED")
@@ -138,11 +105,18 @@ def check_alg(label: str, moves_str: str, expected: str):
         nonzero = sum(1 for t in twists if t != 0)
         status_parts.append(f"CO: [{twist_str}]  ({nonzero} hjørner vridd)")
     else:
-        # General case — show both
-        perm_str = " ".join(f"{i}→{p}" for i, p in enumerate(corner_perm) if p != i)
-        ori_str  = " ".join(f"{i}:{o:+d}" for i, o in enumerate(corner_ori) if o != 0)
-        ep_str   = " ".join(f"{i}→{p}" for i, p in enumerate(edge_perm) if p != i)
-        eo_str   = " ".join(f"{i}:{o:+d}" for i, o in enumerate(edge_ori) if o != 0)
+        perm_str = " ".join(
+            f"{TOP_CORNERS[k]}→{p}" for k, (i, p) in enumerate(zip(TOP_CORNERS, corner_perm)) if p != i
+        )
+        ori_str = " ".join(
+            f"{i}:{o:+d}" for i, o in zip(TOP_CORNERS, corner_ori) if o != 0
+        )
+        ep_str = " ".join(
+            f"{TOP_EDGES[k]}→{p}" for k, (i, p) in enumerate(zip(TOP_EDGES, edge_perm)) if p != i
+        )
+        eo_str = " ".join(
+            f"{i}:{o:+d}" for i, o in zip(TOP_EDGES, edge_ori) if o != 0
+        )
         if perm_str:  status_parts.append(f"CP perm: {perm_str}")
         if ori_str:   status_parts.append(f"CP ori:  {ori_str}")
         if ep_str:    status_parts.append(f"EP perm: {ep_str}")
@@ -184,9 +158,9 @@ ocll = [
     ("CO 1",  "R U R- U R U R- U-- R U- R-"),
     ("CO 2",  "F R U++ R- U- R U- R- F-"),
     ("CO 3",  "R U++ R- U R U++ R-"),
-    ("CO 4",  "R U R- U R U R- U-- R U- R-"),  # same as CO 1 per our notes
-    ("CO 5",  "R U R- U R U-- R-"),             # Sune (U-- variant)
-    ("CO 6",  "R- U- R U- R- U++ R"),           # Anti-Sune (U++ variant)
+    ("CO 4",  "R U R- U R U R- U-- R U- R-"),
+    ("CO 5",  "R U R- U R U-- R-"),
+    ("CO 6",  "R- U- R U- R- U++ R"),
     ("CO 7",  "R U++ R- U- R U- R-"),
     ("CO 8",  "R U R- U++ R U++ R-"),
     ("CO 9",  "R U++ R- U- R U R- U- R U- R-"),
@@ -219,25 +193,25 @@ for label, moves in ep_algs:
     check_alg(label, moves, "pure EP")
 
 # ─────────────────────────────────────────────────────────────────
-# EKSTRA: Verifiser at EP 1 og EP 2 er inverse av hverandre
+# EKSTRA
 # ─────────────────────────────────────────────────────────────────
 section("EKSTRA — EP 1 og EP 2 er inverse?")
 s1 = apply("R++ U-- R-- U- R++ U-- R--")
 s2 = apply("R++ U++ R-- U R++ U++ R--", s1)
-identity = np.array_equal(s2.corners, SOLVED_STATE.corners) and np.array_equal(s2.edges, SOLVED_STATE.edges)
+identity = (s2 == SOLVED)
 print(f"  {'✓' if identity else '✗'} EP1 ∘ EP2 = identitet: {identity}")
 
 section("EKSTRA — Niklas ∘ Niklas⁻¹ = identitet?")
 s1 = apply("L U- BR- U L- U- BR U")
 s2 = apply("U- BR- U L U- BR U L-", s1)
-identity = np.array_equal(s2.corners, SOLVED_STATE.corners) and np.array_equal(s2.edges, SOLVED_STATE.edges)
+identity = (s2 == SOLVED)
 print(f"  {'✓' if identity else '✗'} Niklas ∘ Niklas⁻¹ = identitet: {identity}")
 
 section("EKSTRA — Sune³ = identitet?")
-s = copy_state(SOLVED_STATE)
+s = SOLVED
 for _ in range(3):
     s = apply("R U R- U R U-- R-", s)
-identity = np.array_equal(s.corners, SOLVED_STATE.corners) and np.array_equal(s.edges, SOLVED_STATE.edges)
+identity = (s == SOLVED)
 print(f"  {'✓' if identity else '✗'} Sune³ = identitet: {identity}")
 
 print("\n")
