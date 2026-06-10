@@ -6,8 +6,8 @@ from megaminx.moves import apply_move, parse_move
 
 
 def parse_sequence(text: str) -> list[str]:
-    """Parse space-separated move string. Raises ValueError on bad move."""
-    moves = text.strip().split()
+    """Parse space-separated move string. Parentheses are stripped (grouping only)."""
+    moves = text.strip().replace("(", "").replace(")", "").split()
     if not moves:
         raise ValueError("Empty sequence")
     for m in moves:
