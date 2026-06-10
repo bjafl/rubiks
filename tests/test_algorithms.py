@@ -17,7 +17,7 @@ def test_get_unknown_algorithm_raises():
 def test_each_algorithm_produces_valid_state():
     for name, alg_set in ALGORITHM_SETS.items():
         for seq in alg_set:
-            result = apply_sequence(SOLVED_STATE.copy(), seq)
+            result = apply_sequence(SOLVED_STATE, seq)
             r = validate_state(result)
             assert r.valid, f"{name}: {seq!r} produced invalid state: {r.errors}"
 
@@ -31,7 +31,7 @@ def test_sune_six_times_is_identity():
     """
     from megaminx.model import is_solved
     sexy_move = ["U", "R", "U-", "R-"]
-    state = SOLVED_STATE.copy()
+    state = SOLVED_STATE
     for _ in range(6):
         state = apply_sequence(state, sexy_move)
     assert is_solved(state), "Sexy move × 6 should return to solved"
@@ -81,14 +81,14 @@ def test_library_order_constant():
 
 def test_niklas_and_inv_cancel():
     """NIKLAS followed by NIKLAS_INV should return to solved state."""
-    state = apply_sequence(SOLVED_STATE.copy(), SINGLE_ALGS["NIKLAS"])
+    state = apply_sequence(SOLVED_STATE, SINGLE_ALGS["NIKLAS"])
     state = apply_sequence(state, SINGLE_ALGS["NIKLAS_INV"])
     assert is_solved(state), "NIKLAS + NIKLAS_INV should return to solved"
 
 
 def test_ep1_and_ep2_cancel():
     """EP1 followed by EP2 should return to solved state."""
-    state = apply_sequence(SOLVED_STATE.copy(), SINGLE_ALGS["EP1"])
+    state = apply_sequence(SOLVED_STATE, SINGLE_ALGS["EP1"])
     state = apply_sequence(state, SINGLE_ALGS["EP2"])
     assert is_solved(state), "EP1 + EP2 should return to solved"
 
