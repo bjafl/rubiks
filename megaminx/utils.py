@@ -1,41 +1,36 @@
+# megaminx/utils.py
 from __future__ import annotations
 import random
-import numpy as np
-from megaminx.model import MegaminxState, validate_state
-from megaminx.moves import apply_move, ALL_MOVES
+from megaminx.cube import MegaminxState, SOLVED, apply_move
+from megaminx.moves import ALL_MOVES
 
 
 def scramble(state: MegaminxState, n: int) -> MegaminxState:
-    """Apply n random moves to state. Returns new state."""
-    last_face = None
+    from megaminx.moves import parse_move
+    last_fi: int | None = None
     for _ in range(n):
-        candidates = [m for m in ALL_MOVES if m.rstrip("+-") != last_face]
+        candidates = [m for m in ALL_MOVES if parse_move(m)[0] != last_fi]
         move = random.choice(candidates)
         state = apply_move(state, move)
-        last_face = move.rstrip("+-")
+        last_fi = parse_move(move)[0]
     return state
 
 
 def state_to_dict(state: MegaminxState) -> dict:
-    """Convert MegaminxState to dictionary representation."""
     return {
-        "corners": [{"pos": int(state.corners[i, 0]), "ori": int(state.corners[i, 1])}
-                    for i in range(20)],
-        "edges":   [{"pos": int(state.edges[i, 0]),   "ori": int(state.edges[i, 1])}
-                    for i in range(30)],
+        "corners": [{"pos": state.cp[i], "ori": state.co[i]} for i in range(20)],
+        "edges":   [{"pos": state.ep[i], "ori": state.eo[i]} for i in range(30)],
     }
 
 
 def dict_to_state(d: dict, validate: bool = True) -> MegaminxState | dict:
-    """Convert dictionary representation to MegaminxState.
-
-    If validate=True and state is invalid, returns dict with valid=False and errors list.
-    Otherwise returns MegaminxState.
-    """
-    corners = np.array([[c["pos"], c["ori"]] for c in d["corners"]], dtype=np.int8)
-    edges   = np.array([[e["pos"], e["ori"]] for e in d["edges"]],   dtype=np.int8)
-    state = MegaminxState(corners=corners, edges=edges)
+    cp = tuple(c["pos"] for c in d["corners"])
+    co = tuple(c["ori"] for c in d["corners"])
+    ep = tuple(e["pos"] for e in d["edges"])
+    eo = tuple(e["ori"] for e in d["edges"])
+    state = MegaminxState(cp, co, ep, eo)
     if validate:
+        from megaminx.model import validate_state
         r = validate_state(state)
         if not r.valid:
             return {"valid": False, "errors": r.errors}
@@ -43,24 +38,14 @@ def dict_to_state(d: dict, validate: bool = True) -> MegaminxState | dict:
 
 
 def describe_state(state: MegaminxState) -> str:
-    """Return human-readable description of puzzle state."""
-    from megaminx.model import is_solved
-    if is_solved(state):
+    if state == SOLVED:
         return "State: SOLVED"
-
-    misplaced_corners = sum(
-        1 for i in range(20)
-        if state.corners[i, 0] != i or state.corners[i, 1] != 0
-    )
-    misplaced_edges = sum(
-        1 for i in range(30)
-        if state.edges[i, 0] != i or state.edges[i, 1] != 0
-    )
-    twisted_corners = sum(1 for i in range(20) if state.corners[i, 1] != 0)
-    flipped_edges   = sum(1 for i in range(30) if state.edges[i, 1] != 0)
-
+    misplaced_c = sum(1 for i in range(20) if state.cp[i] != i or state.co[i] != 0)
+    misplaced_e = sum(1 for i in range(30) if state.ep[i] != i or state.eo[i] != 0)
+    twisted_c   = sum(1 for i in range(20) if state.co[i] != 0)
+    flipped_e   = sum(1 for i in range(30) if state.eo[i] != 0)
     return (
         f"State: UNSOLVED — "
-        f"{misplaced_corners}/20 corners misplaced ({twisted_corners} twisted), "
-        f"{misplaced_edges}/30 edges misplaced ({flipped_edges} flipped)"
+        f"{misplaced_c}/20 corners misplaced ({twisted_c} twisted), "
+        f"{misplaced_e}/30 edges misplaced ({flipped_e} flipped)"
     )
