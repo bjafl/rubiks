@@ -245,10 +245,18 @@ def _build_move_table() -> dict[int, dict]:
 
 MOVE_TABLE = _build_move_table()
 
-_MOVE_RE = re.compile(r"^([A-Z]+)(\+\+|--|[+-]?)$")
+_MOVE_RE = re.compile(r"^([A-Z]+)(\+\+|--|2'|2|[+\-']?)$")
+
+_SUFFIX_TURNS: dict[str, int] = {
+    "": 1, "+": 1, "++": 2, "-": 4, "--": 3,
+    "'": 4, "2": 2, "2'": 3,
+}
 
 def parse_move(move_str: str) -> tuple[int, int]:
-    """Return (face_index, turns) where turns ∈ {1, 2, 3, 4}."""
+    """Return (face_index, turns) where turns ∈ {1, 2, 3, 4}.
+
+    Accepts both simulator suffixes (++/--/-) and SSE/WCA suffixes (2/2'/').
+    """
     m = _MOVE_RE.match(move_str.strip())
     if not m:
         raise ValueError(f"Invalid move: {move_str!r}")
@@ -256,7 +264,7 @@ def parse_move(move_str: str) -> tuple[int, int]:
     if face_name not in _FACE_INDEX:
         raise ValueError(f"Unknown face: {face_name!r}. Valid: {FACE_NAMES}")
     fi = _FACE_INDEX[face_name]
-    turns = {"": 1, "+": 1, "++": 2, "-": 4, "--": 3}[suffix]
+    turns = _SUFFIX_TURNS[suffix]
     return fi, turns
 
 
