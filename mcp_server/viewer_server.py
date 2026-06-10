@@ -79,6 +79,7 @@ def _handle_command(cmd: dict) -> dict:
     elif t == "reset":
         VIEWER_STATE.reset()
         _broadcast_sync({"type": "reset"})
+        _broadcast_sync(VIEWER_STATE.state_snapshot())
     elif t == "get_library":
         return {"ok": True, "library": get_library()}
     elif t == "get_state":

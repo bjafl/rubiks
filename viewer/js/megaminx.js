@@ -2,7 +2,6 @@ import * as THREE from 'three';
 
 const STICKER_LIFT = 0.006;
 const INNER_S = 0.42;
-const MID_S   = 0.72;
 
 /**
  * Build all Megaminx geometry. Returns { group, updateColors }.
@@ -22,10 +21,9 @@ export function buildMegaminx(geometry) {
     group.add(_buildFan(verts.map(v => centerV.clone().lerp(v, 0.97)), normal, 0x111111, 0));
 
     const innerV = verts.map(v => centerV.clone().lerp(v, INNER_S));
-    const midV   = verts.map(v => centerV.clone().lerp(v, MID_S));
 
     // Center sticker — centers never move so always show home color
-    const cMesh = _buildFan(innerV, normal, geometry.faceColors[geometry.faceNames[fi]], STICKER_LIFT);
+    const cMesh = _buildFan(_shrink(innerV), normal, geometry.faceColors[geometry.faceNames[fi]], STICKER_LIFT);
     group.add(cMesh);
 
     const eMeshes  = [];
@@ -35,15 +33,17 @@ export function buildMegaminx(geometry) {
       const k1 = (k + 1) % 5;
       const km = (k - 1 + 5) % 5;
 
-      // Edge sticker (trapezoid)
-      const eM = _buildQuad([midV[k], midV[k1], innerV[k1], innerV[k]], normal, 0x888888, STICKER_LIFT);
+      // Edge sticker: middle third of face edge k→k+1, tapering to innerV
+      const e1 = verts[k].clone().lerp(verts[k1], 1/3);
+      const e2 = verts[k].clone().lerp(verts[k1], 2/3);
+      const eM = _buildQuad(_shrink([e1, e2, innerV[k1], innerV[k]]), normal, 0x888888, STICKER_LIFT);
       group.add(eM);
       eMeshes.push(eM);
 
-      // Corner sticker (pentagon-ish)
-      const halfNext = verts[k].clone().lerp(verts[k1], 0.5);
-      const halfPrev = verts[k].clone().lerp(verts[km], 0.5);
-      const coM = _buildFan([verts[k], halfNext, midV[k1], midV[k], halfPrev], normal, 0x888888, STICKER_LIFT);
+      // Corner sticker: corner at verts[k], from 2/3 along prev edge to 1/3 along next edge
+      const cPrev = verts[km].clone().lerp(verts[k], 2/3);
+      const cNext = verts[k].clone().lerp(verts[k1], 1/3);
+      const coM = _buildFan(_shrink([cPrev, verts[k], cNext, innerV[k]]), normal, 0x888888, STICKER_LIFT);
       group.add(coM);
       coMeshes.push(coM);
     }
@@ -81,6 +81,14 @@ export function buildMegaminx(geometry) {
   }
 
   return { group, updateColors };
+}
+
+function _shrink(verts, factor = 0.88) {
+  const cx = verts.reduce((s, v) => s + v.x, 0) / verts.length;
+  const cy = verts.reduce((s, v) => s + v.y, 0) / verts.length;
+  const cz = verts.reduce((s, v) => s + v.z, 0) / verts.length;
+  const c = new THREE.Vector3(cx, cy, cz);
+  return verts.map(v => c.clone().lerp(v, factor));
 }
 
 function _buildFan(verts, normal, color, lift) {

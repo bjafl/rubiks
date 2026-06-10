@@ -6,7 +6,7 @@ export function createScene(container) {
   scene.background = new THREE.Color(0x0d1117);
 
   const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-  camera.position.set(0, 1.5, 5);
+  camera.position.set(0, 5, 3);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
