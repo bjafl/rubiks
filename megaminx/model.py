@@ -1,21 +1,10 @@
+# megaminx/model.py
 from __future__ import annotations
 from dataclasses import dataclass
-import numpy as np
 
+from megaminx.cube import MegaminxState, SOLVED  # re-export
 
-@dataclass
-class MegaminxState:
-    corners: np.ndarray  # shape (20, 2): col 0 = position, col 1 = orientation
-    edges: np.ndarray    # shape (30, 2): col 0 = position, col 1 = orientation
-
-    def copy(self) -> MegaminxState:
-        return MegaminxState(self.corners.copy(), self.edges.copy())
-
-
-SOLVED_STATE = MegaminxState(
-    corners=np.array([[i, 0] for i in range(20)], dtype=np.int8),
-    edges=np.array([[i, 0] for i in range(30)], dtype=np.int8),
-)
+SOLVED_STATE: MegaminxState = SOLVED
 
 
 @dataclass
@@ -43,10 +32,10 @@ def _perm_parity(perm: list[int]) -> int:
 def validate_state(state: MegaminxState) -> ValidationResult:
     errors: list[str] = []
 
-    c_pos = list(state.corners[:, 0])
-    e_pos = list(state.edges[:, 0])
-    c_ori = list(state.corners[:, 1])
-    e_ori = list(state.edges[:, 1])
+    c_pos = list(state.cp)
+    e_pos = list(state.ep)
+    c_ori = list(state.co)
+    e_ori = list(state.eo)
 
     if sorted(c_pos) != list(range(20)):
         errors.append("Corner positions are not a valid permutation of 0-19")
@@ -63,7 +52,7 @@ def validate_state(state: MegaminxState) -> ValidationResult:
     if sum(e_ori) % 2 != 0:
         errors.append("Sum of edge orientations must be ≡ 0 (mod 2)")
 
-    if not errors:  # only check parity if positions are valid permutations
+    if not errors:
         if _perm_parity(c_pos) != _perm_parity(e_pos):
             errors.append("Corner permutation parity must equal edge permutation parity")
 
@@ -71,7 +60,4 @@ def validate_state(state: MegaminxState) -> ValidationResult:
 
 
 def is_solved(state: MegaminxState) -> bool:
-    return (
-        np.array_equal(state.corners, SOLVED_STATE.corners)
-        and np.array_equal(state.edges, SOLVED_STATE.edges)
-    )
+    return state.is_solved
