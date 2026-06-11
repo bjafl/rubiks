@@ -291,10 +291,15 @@ def test_catalog_builder_case_ids_unique():
 
 
 def test_catalog_builder_solutions_solve_case():
-    # Every solution must bring the canonical start state to is_solved
+    # Every solution must bring the canonical start state to is_solved.
+    # At depth 7 with ⟨R,U⟩, 5 of 16 CO cases are reachable — enough to test correctness.
     move_set = ["R", "R-", "U", "U-", "U++", "U--"]
     builder = CatalogBuilder(CO_STAGE, move_set, max_depth=7)
     catalog = builder.build()
+    cases_with_solutions = sum(1 for c in catalog.cases if c.solutions)
+    assert cases_with_solutions >= 3, (
+        f"Expected >= 3 CO cases solvable at depth 7, got {cases_with_solutions}"
+    )
     for case in catalog.cases:
         ll_co = tuple(case.canonical_state["co"])
         state = _make_ll_state(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)

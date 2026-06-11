@@ -299,7 +299,7 @@ class CatalogBuilder:
             start = _make_ll_state(ll_co, ll_cp, ll_ep)
             solutions = _find_solutions(start, self.stage, self.move_set, self.max_depth)
             cases.append(Case(
-                case_id=f"{self.stage.name}_{idx:03d}",
+                case_id=f"{self.stage.name}_{idx:03d}",  # positional — stable only if enumerate_cases order is stable
                 canonical_state=_ll_to_state_dict(self.stage, ll_co, ll_cp, ll_ep),
                 auf_variants=auf_variants,
                 solutions=solutions,
