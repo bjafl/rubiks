@@ -6,6 +6,7 @@ storing and querying case databases.
 """
 from __future__ import annotations
 from dataclasses import dataclass
+import itertools
 
 from megaminx.cube import MegaminxState
 
@@ -134,3 +135,78 @@ def auf_canonical(
     """Return the lexicographically smallest AUF variant as the canonical key."""
     variants = [_apply_auf(ll_co, ll_cp, ll_ep, k) for k in range(5)]
     return min(variants)
+
+
+# ─── Case enumeration ─────────────────────────────────────────────────────────
+
+
+def _perm_parity(perm: tuple, identity: tuple) -> int:
+    """Return 0 for even permutations, 1 for odd."""
+    n = len(perm)
+    idx = {v: i for i, v in enumerate(identity)}
+    local = [idx[v] for v in perm]
+    visited = [False] * n
+    par = 0
+    for i in range(n):
+        if not visited[i]:
+            c, j = 0, i
+            while not visited[j]:
+                visited[j], j, c = True, local[j], c + 1
+            par ^= (c + 1) % 2
+    return par
+
+
+def _iter_co_states():
+    """Yield one canonical (ll_co, ll_cp, ll_ep) per AUF-equivalence class of non-trivial CO states."""
+    identity_cp = tuple(LL_CORNER_SLOTS)
+    identity_ep = tuple(LL_EDGE_SLOTS)
+    seen = set()
+    for co in itertools.product(range(3), repeat=5):
+        if sum(co) % 3 == 0 and any(x != 0 for x in co):
+            state = (co, identity_cp, identity_ep)
+            canonical = auf_canonical(*state)
+            if canonical not in seen:
+                seen.add(canonical)
+                yield canonical
+
+
+def _iter_ep_states():
+    """Yield one canonical (ll_co, ll_cp, ll_ep) per AUF-equivalence class of non-trivial even EP permutations."""
+    identity_co = (0,) * 5
+    identity_cp = tuple(LL_CORNER_SLOTS)
+    identity_ep = tuple(LL_EDGE_SLOTS)
+    seen = set()
+    for ep_perm in itertools.permutations(LL_EDGE_SLOTS):
+        if ep_perm != identity_ep and _perm_parity(ep_perm, identity_ep) == 0:
+            state = (identity_co, identity_cp, ep_perm)
+            canonical = auf_canonical(*state)
+            if canonical not in seen:
+                seen.add(canonical)
+                yield canonical
+
+
+def _iter_cp_states():
+    """Yield one canonical (ll_co, ll_cp, ll_ep) per AUF-equivalence class of non-trivial even CP permutations."""
+    identity_co = (0,) * 5
+    identity_cp = tuple(LL_CORNER_SLOTS)
+    identity_ep = tuple(LL_EDGE_SLOTS)
+    seen = set()
+    for cp_perm in itertools.permutations(LL_CORNER_SLOTS):
+        if cp_perm != identity_cp and _perm_parity(cp_perm, identity_cp) == 0:
+            state = (identity_co, cp_perm, identity_ep)
+            canonical = auf_canonical(*state)
+            if canonical not in seen:
+                seen.add(canonical)
+                yield canonical
+
+
+def enumerate_cases(stage: LLStage) -> list[tuple]:
+    """Return canonical (ll_co, ll_cp, ll_ep) for each unique AUF-equivalence class."""
+    if stage.solve_co:
+        return list(_iter_co_states())
+    elif stage.solve_ep:
+        return list(_iter_ep_states())
+    elif stage.solve_cp:
+        return list(_iter_cp_states())
+    else:
+        raise ValueError("Stage must solve at least one component")

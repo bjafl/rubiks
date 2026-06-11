@@ -155,3 +155,44 @@ def test_auf_5_distinct_variants():
     canonical = auf_canonical(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
     variants = {_apply_auf(*canonical, k) for k in range(5)}
     assert len(variants) == 5
+
+
+# ─── Case enumeration tests ────────────────────────────────────────────────────
+
+from megaminx.ll_catalog import enumerate_cases
+
+
+def test_co_case_count():
+    cases = enumerate_cases(CO_STAGE)
+    assert len(cases) == 80
+
+
+def test_ep_case_count():
+    cases = enumerate_cases(EP_STAGE)
+    assert len(cases) == 59
+
+
+def test_cp_case_count():
+    cases = enumerate_cases(CP_STAGE_CO_FIRST)
+    assert len(cases) == 59
+
+
+def test_cases_are_canonical():
+    # Every case returned by enumerate_cases must already be its own canonical
+    for case in enumerate_cases(CO_STAGE):
+        assert auf_canonical(*case) == case
+
+
+def test_cases_are_distinct():
+    cases = enumerate_cases(CO_STAGE)
+    assert len(set(cases)) == len(cases)
+
+
+def test_co_cases_exclude_identity():
+    # CO=(0,0,0,0,0) must not appear in any AUF variant
+    cases = enumerate_cases(CO_STAGE)
+    identity_co = (0, 0, 0, 0, 0)
+    for case in cases:
+        for k in range(5):
+            rotated_co, _, _ = _apply_auf(*case, k)
+            assert rotated_co != identity_co
