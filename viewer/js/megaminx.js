@@ -10,6 +10,7 @@ export function buildMegaminx(geometry) {
 
   const cornerMeshBySlot = Array.from({ length: 20 }, () => []);
   const edgeMeshBySlot   = Array.from({ length: 30 }, () => []);
+  const faceBackings     = [];
 
   for (let fi = 0; fi < 12; fi++) {
     const rawVerts = geometry.faceVertices[fi];
@@ -20,11 +21,14 @@ export function buildMegaminx(geometry) {
     const ec = geometry.faceEdgeCycles[fi];
 
     // Black face backing
-    group.add(_buildFan(verts.map(v => centerV.clone().lerp(v, 0.97)), normal, 0x111111, 0));
+    const backing = _buildFan(verts.map(v => centerV.clone().lerp(v, 0.97)), normal, 0x111111, 0);
+    _storeOrig(backing);
+    group.add(backing);
+    faceBackings.push(backing);
 
     const innerV = verts.map(v => centerV.clone().lerp(v, INNER_S));
 
-    // Center sticker — fixed, never animates
+    // Center sticker
     const cMesh = _buildFan(_shrink(innerV), normal, geometry.faceColors[geometry.faceNames[fi]], STICKER_LIFT);
     _storeOrig(cMesh);
     group.add(cMesh);
@@ -89,7 +93,7 @@ export function buildMegaminx(geometry) {
   function getMeshesForFace(fi) {
     const cc = geometry.faceCornerCycles[fi];
     const ec = geometry.faceEdgeCycles[fi];
-    const meshes = [];
+    const meshes = [faceBackings[fi], faceStickerMeshes[fi].center];
     for (const ci of cc) meshes.push(...cornerMeshBySlot[ci]);
     for (const ei of ec) meshes.push(...edgeMeshBySlot[ei]);
     return meshes;
