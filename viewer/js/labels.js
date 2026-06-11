@@ -1,6 +1,6 @@
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-export function buildLabels(scene, geometry, stickerMetas) {
+export function buildLabels(scene, stickerMetas) {
   const faceSpans  = [];
   const slotSpans  = [];
   const pieceItems = [];
