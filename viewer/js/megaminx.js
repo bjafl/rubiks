@@ -6,6 +6,7 @@ const INNER_S = 0.42;
 export function buildMegaminx(geometry) {
   const group = new THREE.Group();
   const faceStickerMeshes = [];
+  const stickerMetas      = [];
 
   const cornerMeshBySlot = Array.from({ length: 20 }, () => []);
   const edgeMeshBySlot   = Array.from({ length: 30 }, () => []);
@@ -27,6 +28,14 @@ export function buildMegaminx(geometry) {
     const cMesh = _buildFan(_shrink(innerV), normal, geometry.faceColors[geometry.faceNames[fi]], STICKER_LIFT);
     _storeOrig(cMesh);
     group.add(cMesh);
+    stickerMetas.push({
+      mesh:      cMesh,
+      type:      'center',
+      fi,
+      slotIdx:   null,
+      faceNames: geometry.faceNames[fi],
+      center:    centerV.clone().addScaledVector(normal, STICKER_LIFT),
+    });
 
     const eMeshes  = [];
     const coMeshes = [];
@@ -43,6 +52,16 @@ export function buildMegaminx(geometry) {
       group.add(eM);
       eMeshes.push(eM);
       edgeMeshBySlot[ec[k]].push(eM);
+      stickerMetas.push({
+        mesh:      eM,
+        type:      'edge',
+        fi,
+        slotIdx:   ec[k],
+        faceNames: geometry.edgeFaces[ec[k]].map(i => geometry.faceNames[i]).join('/'),
+        center:    e1.clone().add(e2).add(innerV[k1]).add(innerV[k])
+                     .multiplyScalar(0.25)
+                     .addScaledVector(normal, STICKER_LIFT),
+      });
 
       // Corner sticker
       const cPrev = verts[km].clone().lerp(verts[k], 2/3);
@@ -52,6 +71,16 @@ export function buildMegaminx(geometry) {
       group.add(coM);
       coMeshes.push(coM);
       cornerMeshBySlot[cc[k]].push(coM);
+      stickerMetas.push({
+        mesh:      coM,
+        type:      'corner',
+        fi,
+        slotIdx:   cc[k],
+        faceNames: geometry.cornerFaces[cc[k]].map(i => geometry.faceNames[i]).join('/'),
+        center:    cPrev.clone().add(verts[k]).add(cNext).add(innerV[k])
+                     .multiplyScalar(0.25)
+                     .addScaledVector(normal, STICKER_LIFT),
+      });
     }
 
     faceStickerMeshes.push({ center: cMesh, edges: eMeshes, corners: coMeshes });
@@ -63,7 +92,7 @@ export function buildMegaminx(geometry) {
     const meshes = [];
     for (const ci of cc) meshes.push(...cornerMeshBySlot[ci]);
     for (const ei of ec) meshes.push(...edgeMeshBySlot[ei]);
-    return meshes; // exactly 25 meshes: 5×3 corners + 5×2 edges
+    return meshes;
   }
 
   function updateColors(state) {
@@ -95,7 +124,7 @@ export function buildMegaminx(geometry) {
     }
   }
 
-  return { group, updateColors, getMeshesForFace };
+  return { group, updateColors, getMeshesForFace, stickerMetas };
 }
 
 function _storeOrig(mesh) {
@@ -114,7 +143,6 @@ function _shrink(verts, factor = 0.88) {
 function _buildFan(verts, normal, color, lift) {
   const pos = [];
   for (let i = 1; i < verts.length - 1; i++) {
-    // Reverse winding (face verts are CW when viewed from outside → need CCW for Three.js front-face)
     pos.push(...verts[0].toArray(), ...verts[i + 1].toArray(), ...verts[i].toArray());
   }
   const geo = new THREE.BufferGeometry();
