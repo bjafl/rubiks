@@ -1,5 +1,6 @@
 import { createScene }      from './scene.js';
 import { buildMegaminx }    from './megaminx.js';
+import { buildLabels }      from './labels.js';
 import { updateTopdownSvg } from './svg.js';
 import { initControls }     from './controls.js';
 import { initLibrary }      from './library.js';
@@ -10,10 +11,13 @@ const WS_URL = 'ws://localhost:8765';
 async function main() {
   const geometry = await (await fetch('/geometry.json')).json();
 
-  const container                                 = document.getElementById('canvas-container');
-  const { scene }                                 = createScene(container);
-  const { group, updateColors, getMeshesForFace } = buildMegaminx(geometry);
+  const container                                        = document.getElementById('canvas-container');
+  const { scene }                                        = createScene(container);
+  const { group, updateColors, getMeshesForFace,
+          stickerMetas }                                 = buildMegaminx(geometry);
   scene.add(group);
+
+  const { updateLabelState, setLabelMode } = buildLabels(scene, stickerMetas);
 
   const animator = createAnimator(scene, geometry, getMeshesForFace);
 
@@ -40,14 +44,24 @@ async function main() {
     if (playTimer) { clearTimeout(playTimer); playTimer = null; }
   }
 
-  // During auto-play the animation itself provides pacing; the 50ms here is
-  // just a small buffer between animation-end and the next HTTP request.
   function scheduleNext() {
     playTimer = setTimeout(() => {
       lastCommandWasBackward = false;
       sendCmd({ type: 'step_forward' });
     }, 50);
   }
+
+  function syncLabelMode() {
+    setLabelMode({
+      faceNames: document.getElementById('chk-facename').checked,
+      slots:     document.getElementById('chk-slot').checked,
+      pieces:    document.getElementById('chk-piece').checked,
+    });
+    if (lastState) updateLabelState(lastState);
+  }
+  document.getElementById('chk-facename').addEventListener('change', syncLabelMode);
+  document.getElementById('chk-slot').addEventListener('change', syncLabelMode);
+  document.getElementById('chk-piece').addEventListener('change', syncLabelMode);
 
   const ctrlApi = initControls({
     onFirst: () => {
@@ -68,7 +82,6 @@ async function main() {
       ctrlApi.setPlaying(true);
       if (lastState.moveIndex >= lastState.totalMoves) {
         sendCmd({ type: 'goto_move', n: 0 });
-        // scheduleNext() will fire from the goto_move state response
       } else {
         scheduleNext();
       }
@@ -99,19 +112,18 @@ async function main() {
       if (svgEl) updateTopdownSvg(svgEl, msg, geometry);
 
       if (msg.currentMove && !animator.isAnimating) {
-        // Tick the counter up immediately so user sees the step number change
-        // as the face starts rotating rather than after it finishes.
         ctrlApi.updateProgress(msg.moveIndex, msg.totalMoves, msg.currentMove, msg.algName);
         animator.animate(msg.currentMove, animDuration(), lastCommandWasBackward, () => {
           updateColors(msg);
+          updateLabelState(msg);
           if (isPlaying) {
             if (msg.moveIndex >= msg.totalMoves) stopPlay();
             else scheduleNext();
           }
         });
       } else {
-        // No animation: goto_move jumps, reset, or move already animating (shouldn't happen).
         updateColors(msg);
+        updateLabelState(msg);
         ctrlApi.updateProgress(msg.moveIndex, msg.totalMoves, msg.currentMove, msg.algName);
         if (isPlaying) {
           if (msg.moveIndex >= msg.totalMoves) stopPlay();
