@@ -3,10 +3,12 @@ import pytest
 from megaminx.cube import SOLVED, apply_move, MegaminxState
 from megaminx.ll_catalog import (
     LL_CORNER_SLOTS, LL_EDGE_SLOTS,
+    _LL_CORNER_SET, _LL_EDGE_SET,
     LLStage, Solution, Case, StageCatalog,
     CO_STAGE, EP_STAGE, CP_STAGE_CO_FIRST, CP_STAGE_CO_LAST,
     _apply_auf, auf_canonical, enumerate_cases,
     _make_ll_state, _find_solutions,
+    _ll_to_state_dict, CatalogBuilder,
 )
 
 
@@ -254,3 +256,70 @@ def test_solutions_sorted_by_length():
     assert len(solutions) >= 2, "Expected multiple solutions to verify sort order"
     for i in range(len(solutions) - 1):
         assert solutions[i].length <= solutions[i + 1].length
+
+
+# ─── CatalogBuilder tests ─────────────────────────────────────────────────────
+
+
+def test_catalog_builder_co_case_count():
+    builder = CatalogBuilder(CO_STAGE, ["R", "R-", "U", "U-"], max_depth=1)
+    catalog = builder.build()
+    assert catalog.stage == "co"
+    assert len(catalog.cases) == 16
+
+
+def test_catalog_builder_case_has_5_auf_variants():
+    builder = CatalogBuilder(CO_STAGE, ["R", "R-", "U", "U-"], max_depth=1)
+    catalog = builder.build()
+    for case in catalog.cases:
+        assert len(case.auf_variants) == 5
+
+
+def test_catalog_builder_canonical_in_auf_variants():
+    # canonical_state must equal auf_variants[0]
+    builder = CatalogBuilder(CO_STAGE, ["R", "R-", "U", "U-"], max_depth=1)
+    catalog = builder.build()
+    for case in catalog.cases:
+        assert case.auf_variants[0] == case.canonical_state
+
+
+def test_catalog_builder_case_ids_unique():
+    builder = CatalogBuilder(CO_STAGE, ["R", "R-", "U", "U-"], max_depth=1)
+    catalog = builder.build()
+    ids = [c.case_id for c in catalog.cases]
+    assert len(ids) == len(set(ids))
+
+
+def test_catalog_builder_solutions_solve_case():
+    # Every solution must bring the canonical start state to is_solved
+    move_set = ["R", "R-", "U", "U-", "U++", "U--"]
+    builder = CatalogBuilder(CO_STAGE, move_set, max_depth=7)
+    catalog = builder.build()
+    for case in catalog.cases:
+        ll_co = tuple(case.canonical_state["co"])
+        state = _make_ll_state(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+        for sol in case.solutions:
+            s = state
+            for m in sol.moves:
+                s = apply_move(s, m)
+            assert CO_STAGE.is_solved(s), f"Solution {sol.moves} failed for {case.case_id}"
+
+
+def test_catalog_builder_solutions_preserve_nll():
+    # No solution should disturb non-LL pieces
+    move_set = ["R", "R-", "U", "U-"]
+    builder = CatalogBuilder(CO_STAGE, move_set, max_depth=7)
+    catalog = builder.build()
+    for case in catalog.cases:
+        ll_co = tuple(case.canonical_state["co"])
+        state = _make_ll_state(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+        for sol in case.solutions:
+            s = state
+            for m in sol.moves:
+                s = apply_move(s, m)
+            for i in range(20):
+                if i not in _LL_CORNER_SET:
+                    assert s.cp[i] == i and s.co[i] == 0
+            for i in range(30):
+                if i not in _LL_EDGE_SET:
+                    assert s.ep[i] == i and s.eo[i] == 0

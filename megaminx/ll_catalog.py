@@ -266,3 +266,47 @@ def _dfs(
         if move.rstrip("0123456789-+'") == last_face:
             continue  # no two moves on the same face in a row
         _dfs(apply_move(state, move), stage, move_set, depth_left - 1, path + [move], solutions)
+
+
+# ─── CatalogBuilder ───────────────────────────────────────────────────────────
+
+def _ll_to_state_dict(stage: LLStage, ll_co: tuple, ll_cp: tuple, ll_ep: tuple) -> dict:
+    """Build a dict containing only the stage's component (for canonical_state / auf_variants)."""
+    d: dict = {}
+    if stage.solve_co:
+        d["co"] = list(ll_co)
+    if stage.solve_ep:
+        d["ep"] = list(ll_ep)
+    if stage.solve_cp:
+        d["cp"] = list(ll_cp)
+    return d
+
+
+class CatalogBuilder:
+    def __init__(self, stage: LLStage, move_set: list[str], max_depth: int) -> None:
+        self.stage = stage
+        self.move_set = move_set
+        self.max_depth = max_depth
+
+    def build(self) -> StageCatalog:
+        canonical_list = enumerate_cases(self.stage)
+        cases: list[Case] = []
+        for idx, (ll_co, ll_cp, ll_ep) in enumerate(canonical_list):
+            auf_variants = [
+                _ll_to_state_dict(self.stage, *_apply_auf(ll_co, ll_cp, ll_ep, k))
+                for k in range(5)
+            ]
+            start = _make_ll_state(ll_co, ll_cp, ll_ep)
+            solutions = _find_solutions(start, self.stage, self.move_set, self.max_depth)
+            cases.append(Case(
+                case_id=f"{self.stage.name}_{idx:03d}",
+                canonical_state=_ll_to_state_dict(self.stage, ll_co, ll_cp, ll_ep),
+                auf_variants=auf_variants,
+                solutions=solutions,
+            ))
+        return StageCatalog(
+            stage=self.stage.name,
+            move_set=self.move_set,
+            max_depth=self.max_depth,
+            cases=cases,
+        )
