@@ -142,7 +142,7 @@ def auf_canonical(ll_co, ll_ep, ll_cp) -> tuple:
 | Stage | Raw states | Expected cases |
 |-------|-----------|----------------|
 | CO | 81 | 16 (matches docs) |
-| EP | 60 | 5 (matches docs) |
+| EP | 60 | 12 (Burnside: 60/5 = 12; identity orbit has size 5) |
 | CP | 60 | ~12 (Burnside: 60/5 = 12) |
 
 ---
@@ -251,7 +251,7 @@ python scripts/gen_ll_catalog.py --stage cp --moves "R,R-,R++,R--,U,U-" --max-de
 | Test | What it verifies |
 |------|-----------------|
 | `test_co_case_count` | Exactly 16 CO cases after AUF reduction |
-| `test_ep_case_count` | Exactly 5 EP cases |
+| `test_ep_case_count` | Exactly 12 EP cases |
 | `test_auf_canonical_stable` | `auf_canonical(canonical)` returns same state |
 | `test_auf_5_variants` | Every case has exactly 5 AUF variants |
 | `test_solutions_solve_case` | Every solution in catalog applied to its case reaches solved |

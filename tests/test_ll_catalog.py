@@ -179,13 +179,15 @@ def test_cp_case_count():
 
 def test_cases_are_canonical():
     # Every case returned by enumerate_cases must already be its own canonical
-    for case in enumerate_cases(CO_STAGE):
-        assert auf_canonical(*case) == case
+    for stage in (CO_STAGE, EP_STAGE, CP_STAGE_CO_FIRST):
+        for case in enumerate_cases(stage):
+            assert auf_canonical(*case) == case
 
 
 def test_cases_are_distinct():
-    cases = enumerate_cases(CO_STAGE)
-    assert len(set(cases)) == len(cases)
+    for stage in (CO_STAGE, EP_STAGE, CP_STAGE_CO_FIRST):
+        cases = enumerate_cases(stage)
+        assert len(set(cases)) == len(cases)
 
 
 def test_co_cases_exclude_identity():
