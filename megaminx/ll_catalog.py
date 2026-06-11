@@ -261,8 +261,8 @@ def _dfs(
         return  # don't extend — solution already found at this depth
     if depth_left == 0:
         return
-    last_face = path[-1].rstrip("-+'") if path else None
+    last_face = path[-1].rstrip("0123456789-+'") if path else None
     for move in move_set:
-        if move.rstrip("-+'") == last_face:
+        if move.rstrip("0123456789-+'") == last_face:
             continue  # no two moves on the same face in a row
         _dfs(apply_move(state, move), stage, move_set, depth_left - 1, path + [move], solutions)

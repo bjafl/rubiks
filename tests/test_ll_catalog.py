@@ -234,11 +234,12 @@ def test_find_solutions_empty_for_solved():
 
 
 def test_find_solutions_for_co_state():
-    canonical = auf_canonical((0, 1, 2, 0, 2), LL_CORNER_SLOTS, LL_EDGE_SLOTS)
-    ll_co, ll_cp, ll_ep = canonical
+    # Use first case from enumerate_cases — guaranteed valid (sum ≡ 0 mod 3)
+    ll_co, ll_cp, ll_ep = enumerate_cases(CO_STAGE)[0]
     state = _make_ll_state(ll_co, ll_cp, ll_ep)
     move_set = ["R", "R-", "U", "U-", "U++", "U--"]
     solutions = _find_solutions(state, CO_STAGE, move_set, max_depth=8)
+    assert len(solutions) > 0, "Expected at least one CO solution at depth 8"
     for sol in solutions:
         s = state
         for m in sol.moves:
@@ -247,10 +248,9 @@ def test_find_solutions_for_co_state():
 
 
 def test_solutions_sorted_by_length():
-    canonical = auf_canonical((0, 1, 2, 0, 2), LL_CORNER_SLOTS, LL_EDGE_SLOTS)
-    ll_co, ll_cp, ll_ep = canonical
+    ll_co, ll_cp, ll_ep = enumerate_cases(CO_STAGE)[0]
     state = _make_ll_state(ll_co, ll_cp, ll_ep)
     solutions = _find_solutions(state, CO_STAGE, ["R", "R-", "U", "U-", "U++", "U--"], 8)
-    if len(solutions) >= 2:
-        for i in range(len(solutions) - 1):
-            assert solutions[i].length <= solutions[i + 1].length
+    assert len(solutions) >= 2, "Expected multiple solutions to verify sort order"
+    for i in range(len(solutions) - 1):
+        assert solutions[i].length <= solutions[i + 1].length
