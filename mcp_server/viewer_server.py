@@ -106,6 +106,10 @@ class _HTTPHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(VIEWER_DIR), **kwargs)
 
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        super().end_headers()
+
     def do_POST(self) -> None:
         if self.path != "/api/command":
             self.send_response(404)
