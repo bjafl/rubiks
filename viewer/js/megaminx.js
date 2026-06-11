@@ -3,27 +3,29 @@ import * as THREE from 'three';
 const STICKER_LIFT = 0.006;
 const INNER_S = 0.42;
 
-/**
- * Build all Megaminx geometry. Returns { group, updateColors }.
- * updateColors(state) re-colors stickers from a WS state snapshot.
- */
 export function buildMegaminx(geometry) {
   const group = new THREE.Group();
-  const faceStickerMeshes = [];  // [fi] = { center, edges[5], corners[5] }
+  const faceStickerMeshes = [];
+
+  const cornerMeshBySlot = Array.from({ length: 20 }, () => []);
+  const edgeMeshBySlot   = Array.from({ length: 30 }, () => []);
 
   for (let fi = 0; fi < 12; fi++) {
     const rawVerts = geometry.faceVertices[fi];
     const centerV  = new THREE.Vector3(...geometry.faceCenters[fi]);
     const normal   = centerV.clone().normalize();
     const verts    = rawVerts.map(v => new THREE.Vector3(...v));
+    const cc = geometry.faceCornerCycles[fi];
+    const ec = geometry.faceEdgeCycles[fi];
 
     // Black face backing
     group.add(_buildFan(verts.map(v => centerV.clone().lerp(v, 0.97)), normal, 0x111111, 0));
 
     const innerV = verts.map(v => centerV.clone().lerp(v, INNER_S));
 
-    // Center sticker — centers never move so always show home color
+    // Center sticker — fixed, never animates
     const cMesh = _buildFan(_shrink(innerV), normal, geometry.faceColors[geometry.faceNames[fi]], STICKER_LIFT);
+    _storeOrig(cMesh);
     group.add(cMesh);
 
     const eMeshes  = [];
@@ -33,22 +35,35 @@ export function buildMegaminx(geometry) {
       const k1 = (k + 1) % 5;
       const km = (k - 1 + 5) % 5;
 
-      // Edge sticker: middle third of face edge k→k+1, tapering to innerV
+      // Edge sticker
       const e1 = verts[k].clone().lerp(verts[k1], 1/3);
       const e2 = verts[k].clone().lerp(verts[k1], 2/3);
       const eM = _buildQuad(_shrink([e1, e2, innerV[k1], innerV[k]]), normal, 0x888888, STICKER_LIFT);
+      _storeOrig(eM);
       group.add(eM);
       eMeshes.push(eM);
+      edgeMeshBySlot[ec[k]].push(eM);
 
-      // Corner sticker: corner at verts[k], from 2/3 along prev edge to 1/3 along next edge
+      // Corner sticker
       const cPrev = verts[km].clone().lerp(verts[k], 2/3);
       const cNext = verts[k].clone().lerp(verts[k1], 1/3);
       const coM = _buildFan(_shrink([cPrev, verts[k], cNext, innerV[k]]), normal, 0x888888, STICKER_LIFT);
+      _storeOrig(coM);
       group.add(coM);
       coMeshes.push(coM);
+      cornerMeshBySlot[cc[k]].push(coM);
     }
 
     faceStickerMeshes.push({ center: cMesh, edges: eMeshes, corners: coMeshes });
+  }
+
+  function getMeshesForFace(fi) {
+    const cc = geometry.faceCornerCycles[fi];
+    const ec = geometry.faceEdgeCycles[fi];
+    const meshes = [];
+    for (const ci of cc) meshes.push(...cornerMeshBySlot[ci]);
+    for (const ei of ec) meshes.push(...edgeMeshBySlot[ei]);
+    return meshes; // exactly 25 meshes: 5×3 corners + 5×2 edges
   }
 
   function updateColors(state) {
@@ -80,7 +95,12 @@ export function buildMegaminx(geometry) {
     }
   }
 
-  return { group, updateColors };
+  return { group, updateColors, getMeshesForFace };
+}
+
+function _storeOrig(mesh) {
+  mesh.userData.origPos  = mesh.position.clone();
+  mesh.userData.origQuat = mesh.quaternion.clone();
 }
 
 function _shrink(verts, factor = 0.88) {
