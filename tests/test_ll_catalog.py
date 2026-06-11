@@ -328,3 +328,45 @@ def test_catalog_builder_solutions_preserve_nll():
             for i in range(30):
                 if i not in _LL_EDGE_SET:
                     assert s.ep[i] == i and s.eo[i] == 0
+
+
+# ─── Serialization tests ──────────────────────────────────────────────────────
+
+import tempfile
+from pathlib import Path
+
+
+def test_catalog_to_dict_schema():
+    builder = CatalogBuilder(CO_STAGE, ["R", "R-", "U", "U-"], max_depth=1)
+    catalog = builder.build()
+    d = catalog.to_dict()
+    assert d["stage"] == "co"
+    assert isinstance(d["move_set"], list)
+    assert isinstance(d["max_depth"], int)
+    assert isinstance(d["cases"], list)
+    first = d["cases"][0]
+    assert "case_id" in first
+    assert "canonical_state" in first
+    assert "auf_variants" in first
+    assert len(first["auf_variants"]) == 5
+    assert "solutions" in first
+    for sol in first["solutions"]:
+        assert "moves" in sol and "length" in sol
+
+
+def test_catalog_save_and_load_roundtrip():
+    builder = CatalogBuilder(CO_STAGE, ["R", "R-", "U", "U-"], max_depth=1)
+    original = builder.build()
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "co.json"
+        original.save(path)
+        loaded = StageCatalog.load(path)
+    assert loaded.stage == original.stage
+    assert loaded.move_set == original.move_set
+    assert loaded.max_depth == original.max_depth
+    assert len(loaded.cases) == len(original.cases)
+    for orig_case, load_case in zip(original.cases, loaded.cases):
+        assert orig_case.case_id == load_case.case_id
+        assert orig_case.canonical_state == load_case.canonical_state
+        assert orig_case.auf_variants == load_case.auf_variants
+        assert len(orig_case.solutions) == len(load_case.solutions)

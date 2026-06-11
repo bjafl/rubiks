@@ -7,6 +7,8 @@ storing and querying case databases.
 from __future__ import annotations
 from dataclasses import dataclass
 import itertools
+import json
+from pathlib import Path
 
 from megaminx.cube import MegaminxState, SOLVED, apply_move
 
@@ -111,6 +113,54 @@ class StageCatalog:
     move_set: list[str]
     max_depth: int
     cases: list[Case]
+
+    def to_dict(self) -> dict:
+        return {
+            "stage": self.stage,
+            "move_set": self.move_set,
+            "max_depth": self.max_depth,
+            "cases": [
+                {
+                    "case_id": c.case_id,
+                    "canonical_state": c.canonical_state,
+                    "auf_variants": c.auf_variants,
+                    "solutions": [
+                        {"moves": s.moves, "length": s.length}
+                        for s in c.solutions
+                    ],
+                }
+                for c in self.cases
+            ],
+        }
+
+    def save(self, path: str | Path) -> None:
+        p = Path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "w") as f:
+            json.dump(self.to_dict(), f, indent=2)
+
+    @classmethod
+    def load(cls, path: str | Path) -> "StageCatalog":
+        with open(path) as f:
+            data = json.load(f)
+        cases = [
+            Case(
+                case_id=c["case_id"],
+                canonical_state=c["canonical_state"],
+                auf_variants=c["auf_variants"],
+                solutions=[
+                    Solution(moves=s["moves"], length=s["length"])
+                    for s in c["solutions"]
+                ],
+            )
+            for c in data["cases"]
+        ]
+        return cls(
+            stage=data["stage"],
+            move_set=data["move_set"],
+            max_depth=data["max_depth"],
+            cases=cases,
+        )
 
 
 # ─── AUF canonicalization (ring-shift model) ─────────────────────────────────
