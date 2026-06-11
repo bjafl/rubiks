@@ -370,3 +370,6 @@ def test_catalog_save_and_load_roundtrip():
         assert orig_case.canonical_state == load_case.canonical_state
         assert orig_case.auf_variants == load_case.auf_variants
         assert len(orig_case.solutions) == len(load_case.solutions)
+        for orig_sol, load_sol in zip(orig_case.solutions, load_case.solutions):
+            assert orig_sol.moves == load_sol.moves
+            assert orig_sol.length == load_sol.length
