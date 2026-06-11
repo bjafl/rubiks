@@ -203,10 +203,33 @@ def _iter_cp_states():
 def enumerate_cases(stage: LLStage) -> list[tuple]:
     """Return canonical (ll_co, ll_cp, ll_ep) for each unique AUF-equivalence class."""
     if stage.solve_co:
-        return list(_iter_co_states())
+        raw_iter = _iter_co_states()
     elif stage.solve_ep:
-        return list(_iter_ep_states())
+        raw_iter = _iter_ep_states()
     elif stage.solve_cp:
-        return list(_iter_cp_states())
+        raw_iter = _iter_cp_states()
     else:
         raise ValueError("Stage must solve at least one component")
+
+    identity_co = (0,) * 5
+    identity_cp = tuple(LL_CORNER_SLOTS)
+    identity_ep = tuple(LL_EDGE_SLOTS)
+    n = 5
+
+    seen: set = set()
+    cases: list[tuple] = []
+    for ll_co, ll_cp, ll_ep in raw_iter:
+        if stage.solve_co:
+            key = min(tuple(ll_co[(i - k) % n] for i in range(n)) for k in range(n))
+            canonical = (key, identity_cp, identity_ep)
+        elif stage.solve_ep:
+            key = min(tuple(ll_ep[(i - k) % n] for i in range(n)) for k in range(n))
+            canonical = (identity_co, identity_cp, key)
+        else:
+            key = min(tuple(ll_cp[(i - k) % n] for i in range(n)) for k in range(n))
+            canonical = (identity_co, key, identity_ep)
+
+        if key not in seen:
+            seen.add(key)
+            cases.append(canonical)
+    return cases
