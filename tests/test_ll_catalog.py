@@ -96,3 +96,62 @@ def test_is_solved_rejects_disturbed_non_ll():
     state_after_d = apply_move(SOLVED, "D")
     for stage in [CO_STAGE, EP_STAGE, CP_STAGE_CO_FIRST, CP_STAGE_CO_LAST]:
         assert not stage.is_solved(state_after_d), f"{stage.name} should reject D-moved state"
+
+
+# ─── AUF canonicalization tests ─────────────────────────────────────────────
+
+from megaminx.ll_catalog import _apply_auf, auf_canonical
+
+
+def test_apply_auf_k0_is_identity():
+    ll_co = (0, 1, 2, 0, 2)
+    ll_cp = LL_CORNER_SLOTS
+    ll_ep = LL_EDGE_SLOTS
+    assert _apply_auf(ll_co, ll_cp, ll_ep, 0) == (ll_co, ll_cp, ll_ep)
+
+
+def test_apply_auf_k1_spec_example():
+    # Spec example: [0,1,2,0,2] → [2,0,1,2,0] after k=1
+    ll_co = (0, 1, 2, 0, 2)
+    result_co, _, _ = _apply_auf(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS, 1)
+    assert result_co == (2, 0, 1, 2, 0)
+
+
+def test_apply_auf_all_5_variants_spec():
+    # Full spec example variants
+    ll_co = (0, 1, 2, 0, 2)
+    expected = [
+        (0, 1, 2, 0, 2),
+        (2, 0, 1, 2, 0),
+        (0, 2, 0, 1, 2),
+        (2, 0, 2, 0, 1),
+        (1, 2, 0, 2, 0),
+    ]
+    for k in range(5):
+        result_co, _, _ = _apply_auf(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS, k)
+        assert result_co == expected[k], f"k={k}: got {result_co}, expected {expected[k]}"
+
+
+def test_auf_canonical_is_minimum():
+    ll_co = (0, 1, 2, 0, 2)
+    ll_cp = LL_CORNER_SLOTS
+    ll_ep = LL_EDGE_SLOTS
+    canonical = auf_canonical(ll_co, ll_cp, ll_ep)
+    for k in range(5):
+        variant = _apply_auf(ll_co, ll_cp, ll_ep, k)
+        assert canonical <= variant
+
+
+def test_auf_canonical_stable():
+    # Canonical is a fixed point: auf_canonical(canonical) == canonical
+    ll_co = (0, 1, 2, 0, 2)
+    canonical = auf_canonical(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    assert auf_canonical(*canonical) == canonical
+
+
+def test_auf_5_distinct_variants():
+    # Non-trivial CO states have orbit size 5 (no period < 5)
+    ll_co = (0, 1, 2, 0, 2)
+    canonical = auf_canonical(ll_co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    variants = {_apply_auf(*canonical, k) for k in range(5)}
+    assert len(variants) == 5

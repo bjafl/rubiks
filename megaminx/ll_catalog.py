@@ -110,3 +110,27 @@ class StageCatalog:
     move_set: list[str]
     max_depth: int
     cases: list[Case]
+
+
+# ─── AUF canonicalization (ring-shift model) ─────────────────────────────────
+
+def _apply_auf(
+    ll_co: tuple, ll_cp: tuple, ll_ep: tuple, k: int
+) -> tuple[tuple, tuple, tuple]:
+    """Ring-shift all three LL tuples by k positions.
+
+    new[i] = old[(i - k) % 5] — pure positional relabeling, no orientation twist.
+    """
+    n = 5
+    shifted_co = tuple(ll_co[(i - k) % n] for i in range(n))
+    shifted_cp = tuple(ll_cp[(i - k) % n] for i in range(n))
+    shifted_ep = tuple(ll_ep[(i - k) % n] for i in range(n))
+    return shifted_co, shifted_cp, shifted_ep
+
+
+def auf_canonical(
+    ll_co: tuple, ll_cp: tuple, ll_ep: tuple
+) -> tuple[tuple, tuple, tuple]:
+    """Return the lexicographically smallest AUF variant as the canonical key."""
+    variants = [_apply_auf(ll_co, ll_cp, ll_ep, k) for k in range(5)]
+    return min(variants)
