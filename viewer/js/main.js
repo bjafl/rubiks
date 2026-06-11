@@ -3,21 +3,28 @@ import { buildMegaminx }    from './megaminx.js';
 import { updateTopdownSvg } from './svg.js';
 import { initControls }     from './controls.js';
 import { initLibrary }      from './library.js';
+import { createAnimator }   from './animator.js';
 
 const WS_URL = 'ws://localhost:8765';
 
 async function main() {
   const geometry = await (await fetch('/geometry.json')).json();
 
-  const container              = document.getElementById('canvas-container');
-  const { scene }              = createScene(container);
-  const { group, updateColors } = buildMegaminx(geometry);
+  const container                                 = document.getElementById('canvas-container');
+  const { scene }                                 = createScene(container);
+  const { group, updateColors, getMeshesForFace } = buildMegaminx(geometry);
   scene.add(group);
 
-  let lastState = null;
-  let isPlaying = false;
-  let speed     = 1.0;
-  let playTimer = null;
+  const animator = createAnimator(scene, geometry, getMeshesForFace);
+
+  let lastState              = null;
+  let isPlaying              = false;
+  let speed                  = 1.0;
+  let playTimer              = null;
+  let lastCommandWasBackward = false;
+
+  function stepInterval() { return Math.max(120, 800 / speed); }
+  function animDuration()  { return Math.min(stepInterval() * 0.75, 500); }
 
   function sendCmd(cmd) {
     fetch('/api/command', {
@@ -33,25 +40,50 @@ async function main() {
     if (playTimer) { clearTimeout(playTimer); playTimer = null; }
   }
 
+  // During auto-play the animation itself provides pacing; the 50ms here is
+  // just a small buffer between animation-end and the next HTTP request.
   function scheduleNext() {
-    playTimer = setTimeout(() => sendCmd({ type: 'step_forward' }), Math.max(120, 800 / speed));
+    playTimer = setTimeout(() => {
+      lastCommandWasBackward = false;
+      sendCmd({ type: 'step_forward' });
+    }, 50);
   }
 
   const ctrlApi = initControls({
-    onFirst:       () => sendCmd({ type: 'goto_move', n: 0 }),
-    onBack:        () => { stopPlay(); sendCmd({ type: 'step_backward' }); },
+    onFirst: () => {
+      stopPlay();
+      lastCommandWasBackward = false;
+      sendCmd({ type: 'goto_move', n: 0 });
+    },
+    onBack: () => {
+      if (animator.isAnimating) return;
+      stopPlay();
+      lastCommandWasBackward = true;
+      sendCmd({ type: 'step_backward' });
+    },
     onPlay() {
       if (!lastState || lastState.totalMoves === 0) return;
       if (isPlaying) { stopPlay(); return; }
-      if (lastState.moveIndex >= lastState.totalMoves) {
-        sendCmd({ type: 'goto_move', n: 0 });
-      }
       isPlaying = true;
       ctrlApi.setPlaying(true);
-      scheduleNext();
+      if (lastState.moveIndex >= lastState.totalMoves) {
+        sendCmd({ type: 'goto_move', n: 0 });
+        // scheduleNext() will fire from the goto_move state response
+      } else {
+        scheduleNext();
+      }
     },
-    onFwd:         () => { stopPlay(); sendCmd({ type: 'step_forward' }); },
-    onLast:        () => lastState && sendCmd({ type: 'goto_move', n: lastState.totalMoves }),
+    onFwd: () => {
+      if (animator.isAnimating) return;
+      stopPlay();
+      lastCommandWasBackward = false;
+      sendCmd({ type: 'step_forward' });
+    },
+    onLast: () => {
+      stopPlay();
+      lastCommandWasBackward = false;
+      if (lastState) sendCmd({ type: 'goto_move', n: lastState.totalMoves });
+    },
     onSpeedChange: v => { speed = v; },
   });
 
@@ -63,13 +95,28 @@ async function main() {
   function onMessage(msg) {
     if (msg.type === 'state') {
       lastState = msg;
-      updateColors(msg);
       const svgEl = document.getElementById('topdown-svg');
       if (svgEl) updateTopdownSvg(svgEl, msg, geometry);
-      ctrlApi.updateProgress(msg.moveIndex, msg.totalMoves, msg.currentMove, msg.algName);
-      if (isPlaying) {
-        if (msg.moveIndex >= msg.totalMoves) stopPlay();
-        else scheduleNext();
+
+      if (msg.currentMove && !animator.isAnimating) {
+        // Tick the counter up immediately so user sees the step number change
+        // as the face starts rotating rather than after it finishes.
+        ctrlApi.updateProgress(msg.moveIndex, msg.totalMoves, msg.currentMove, msg.algName);
+        animator.animate(msg.currentMove, animDuration(), lastCommandWasBackward, () => {
+          updateColors(msg);
+          if (isPlaying) {
+            if (msg.moveIndex >= msg.totalMoves) stopPlay();
+            else scheduleNext();
+          }
+        });
+      } else {
+        // No animation: goto_move jumps, reset, or move already animating (shouldn't happen).
+        updateColors(msg);
+        ctrlApi.updateProgress(msg.moveIndex, msg.totalMoves, msg.currentMove, msg.algName);
+        if (isPlaying) {
+          if (msg.moveIndex >= msg.totalMoves) stopPlay();
+          else scheduleNext();
+        }
       }
     } else if (msg.type === 'loaded') {
       stopPlay();
