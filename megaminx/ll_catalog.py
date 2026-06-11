@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from megaminx.cube import MegaminxState
 
 # LL piece slots (corners and edges adjacent to the U face)
+# Index 4 appears in both tuples — no conflict because cp/co and ep/eo are separate arrays.
 LL_CORNER_SLOTS: tuple[int, ...] = (0, 4, 7, 18, 19)
 LL_EDGE_SLOTS: tuple[int, ...]   = (4, 8, 27, 28, 29)
 
@@ -88,6 +89,11 @@ CP_STAGE_CO_LAST = LLStage(
 class Solution:
     moves: list[str]
     length: int
+
+    def __post_init__(self):
+        assert self.length == len(self.moves), (
+            f"Solution.length {self.length} != len(moves) {len(self.moves)}"
+        )
 
 
 @dataclass
