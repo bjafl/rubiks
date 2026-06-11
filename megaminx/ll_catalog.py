@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import itertools
 
-from megaminx.cube import MegaminxState
+from megaminx.cube import MegaminxState, SOLVED, apply_move
 
 # LL piece slots (corners and edges adjacent to the U face)
 # Index 4 appears in both tuples — no conflict because cp/co and ep/eo are separate arrays.
@@ -218,3 +218,51 @@ def enumerate_cases(stage: LLStage) -> list[tuple]:
             seen.add(key)
             cases.append(canonical)
     return cases
+
+
+# ─── State builder and DFS solution search ───────────────────────────────────
+
+def _make_ll_state(ll_co: tuple, ll_cp: tuple, ll_ep: tuple) -> MegaminxState:
+    """Build a MegaminxState with given LL values; all non-LL slots stay SOLVED."""
+    co = list(SOLVED.co)
+    cp = list(SOLVED.cp)
+    ep = list(SOLVED.ep)
+    for i, s in enumerate(LL_CORNER_SLOTS):
+        co[s] = ll_co[i]
+        cp[s] = ll_cp[i]
+    for i, s in enumerate(LL_EDGE_SLOTS):
+        ep[s] = ll_ep[i]
+    return MegaminxState(tuple(cp), tuple(co), tuple(ep), SOLVED.eo)
+
+
+def _find_solutions(
+    start: MegaminxState,
+    stage: LLStage,
+    move_set: list[str],
+    max_depth: int,
+) -> list[Solution]:
+    """Return all solutions (sorted shortest-first) via depth-limited DFS."""
+    solutions: list[Solution] = []
+    _dfs(start, stage, move_set, max_depth, [], solutions)
+    solutions.sort(key=lambda s: s.length)
+    return solutions
+
+
+def _dfs(
+    state: MegaminxState,
+    stage: LLStage,
+    move_set: list[str],
+    depth_left: int,
+    path: list[str],
+    solutions: list[Solution],
+) -> None:
+    if stage.is_solved(state):
+        solutions.append(Solution(moves=list(path), length=len(path)))
+        return  # don't extend — solution already found at this depth
+    if depth_left == 0:
+        return
+    last_face = path[-1].rstrip("-+'") if path else None
+    for move in move_set:
+        if move.rstrip("-+'") == last_face:
+            continue  # no two moves on the same face in a row
+        _dfs(apply_move(state, move), stage, move_set, depth_left - 1, path + [move], solutions)

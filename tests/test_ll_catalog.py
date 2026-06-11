@@ -1,9 +1,12 @@
 # tests/test_ll_catalog.py
 import pytest
+from megaminx.cube import SOLVED, apply_move, MegaminxState
 from megaminx.ll_catalog import (
     LL_CORNER_SLOTS, LL_EDGE_SLOTS,
     LLStage, Solution, Case, StageCatalog,
     CO_STAGE, EP_STAGE, CP_STAGE_CO_FIRST, CP_STAGE_CO_LAST,
+    _apply_auf, auf_canonical, enumerate_cases,
+    _make_ll_state, _find_solutions,
 )
 
 
@@ -59,8 +62,6 @@ def test_stage_catalog_dataclass():
 
 # ─── Behaviour tests for is_solved ──────────────────────────────────────────
 
-from megaminx.cube import SOLVED, apply_move, MegaminxState
-
 
 def test_is_solved_accepts_solved_state_all_stages():
     for stage in [CO_STAGE, EP_STAGE, CP_STAGE_CO_FIRST, CP_STAGE_CO_LAST]:
@@ -99,8 +100,6 @@ def test_is_solved_rejects_disturbed_non_ll():
 
 
 # ─── AUF canonicalization tests ─────────────────────────────────────────────
-
-from megaminx.ll_catalog import _apply_auf, auf_canonical
 
 
 def test_apply_auf_k0_is_identity():
@@ -159,8 +158,6 @@ def test_auf_5_distinct_variants():
 
 # ─── Case enumeration tests ────────────────────────────────────────────────────
 
-from megaminx.ll_catalog import enumerate_cases
-
 
 def test_co_case_count():
     cases = enumerate_cases(CO_STAGE)
@@ -198,3 +195,62 @@ def test_co_cases_exclude_identity():
         for k in range(5):
             rotated_co, _, _ = _apply_auf(*case, k)
             assert rotated_co != identity_co
+
+
+# ─── State builder and DFS solution search tests ─────────────────────────────
+
+
+def test_make_ll_state_identity():
+    state = _make_ll_state((0,)*5, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    assert state == SOLVED
+
+
+def test_make_ll_state_co_only():
+    co = (0, 1, 2, 0, 2)
+    state = _make_ll_state(co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    for i, s in enumerate(LL_CORNER_SLOTS):
+        assert state.co[s] == co[i]
+    for s in LL_CORNER_SLOTS:
+        assert state.cp[s] == s
+    for s in LL_EDGE_SLOTS:
+        assert state.ep[s] == s
+
+
+def test_is_solved_co_stage_detects_unoriented():
+    co = (0, 1, 2, 0, 0)  # sum=3≡0, corner at slot 4 has co=1
+    state = _make_ll_state(co, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    assert not CO_STAGE.is_solved(state)
+
+
+def test_is_solved_co_stage_accepts_solved():
+    state = _make_ll_state((0,)*5, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    assert CO_STAGE.is_solved(state)
+
+
+def test_find_solutions_empty_for_solved():
+    state = _make_ll_state((0,)*5, LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    solutions = _find_solutions(state, CO_STAGE, ["R", "R-", "U", "U-"], 5)
+    assert any(s.length == 0 for s in solutions)
+
+
+def test_find_solutions_for_co_state():
+    canonical = auf_canonical((0, 1, 2, 0, 2), LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    ll_co, ll_cp, ll_ep = canonical
+    state = _make_ll_state(ll_co, ll_cp, ll_ep)
+    move_set = ["R", "R-", "U", "U-", "U++", "U--"]
+    solutions = _find_solutions(state, CO_STAGE, move_set, max_depth=8)
+    for sol in solutions:
+        s = state
+        for m in sol.moves:
+            s = apply_move(s, m)
+        assert CO_STAGE.is_solved(s)
+
+
+def test_solutions_sorted_by_length():
+    canonical = auf_canonical((0, 1, 2, 0, 2), LL_CORNER_SLOTS, LL_EDGE_SLOTS)
+    ll_co, ll_cp, ll_ep = canonical
+    state = _make_ll_state(ll_co, ll_cp, ll_ep)
+    solutions = _find_solutions(state, CO_STAGE, ["R", "R-", "U", "U-", "U++", "U--"], 8)
+    if len(solutions) >= 2:
+        for i in range(len(solutions) - 1):
+            assert solutions[i].length <= solutions[i + 1].length
