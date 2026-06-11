@@ -157,47 +157,32 @@ def _perm_parity(perm: tuple, identity: tuple) -> int:
 
 
 def _iter_co_states():
-    """Yield one canonical (ll_co, ll_cp, ll_ep) per AUF-equivalence class of non-trivial CO states."""
+    """Yield all non-trivial (sum≡0 mod 3) CO states as (ll_co, identity_cp, identity_ep)."""
     identity_cp = tuple(LL_CORNER_SLOTS)
     identity_ep = tuple(LL_EDGE_SLOTS)
-    seen = set()
     for co in itertools.product(range(3), repeat=5):
         if sum(co) % 3 == 0 and any(x != 0 for x in co):
-            state = (co, identity_cp, identity_ep)
-            canonical = auf_canonical(*state)
-            if canonical not in seen:
-                seen.add(canonical)
-                yield canonical
+            yield (co, identity_cp, identity_ep)
 
 
 def _iter_ep_states():
-    """Yield one canonical (ll_co, ll_cp, ll_ep) per AUF-equivalence class of non-trivial even EP permutations."""
+    """Yield all non-trivial even EP permutations as (identity_co, identity_cp, ll_ep)."""
     identity_co = (0,) * 5
     identity_cp = tuple(LL_CORNER_SLOTS)
     identity_ep = tuple(LL_EDGE_SLOTS)
-    seen = set()
     for ep_perm in itertools.permutations(LL_EDGE_SLOTS):
         if ep_perm != identity_ep and _perm_parity(ep_perm, identity_ep) == 0:
-            state = (identity_co, identity_cp, ep_perm)
-            canonical = auf_canonical(*state)
-            if canonical not in seen:
-                seen.add(canonical)
-                yield canonical
+            yield (identity_co, identity_cp, ep_perm)
 
 
 def _iter_cp_states():
-    """Yield one canonical (ll_co, ll_cp, ll_ep) per AUF-equivalence class of non-trivial even CP permutations."""
+    """Yield all non-trivial even CP permutations as (identity_co, ll_cp, identity_ep)."""
     identity_co = (0,) * 5
     identity_cp = tuple(LL_CORNER_SLOTS)
     identity_ep = tuple(LL_EDGE_SLOTS)
-    seen = set()
     for cp_perm in itertools.permutations(LL_CORNER_SLOTS):
         if cp_perm != identity_cp and _perm_parity(cp_perm, identity_cp) == 0:
-            state = (identity_co, cp_perm, identity_ep)
-            canonical = auf_canonical(*state)
-            if canonical not in seen:
-                seen.add(canonical)
-                yield canonical
+            yield (identity_co, cp_perm, identity_ep)
 
 
 def enumerate_cases(stage: LLStage) -> list[tuple]:

@@ -174,7 +174,7 @@ def test_ep_case_count():
 
 def test_cp_case_count():
     cases = enumerate_cases(CP_STAGE_CO_FIRST)
-    assert 10 <= len(cases) <= 14  # Burnside estimate: 60/5 = 12
+    assert len(cases) == 12
 
 
 def test_cases_are_canonical():
