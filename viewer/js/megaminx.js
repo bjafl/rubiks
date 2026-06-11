@@ -20,9 +20,10 @@ export function buildMegaminx(geometry) {
     const cc = geometry.faceCornerCycles[fi];
     const ec = geometry.faceEdgeCycles[fi];
 
-    // Black face backing
+    // Black face backing — renderOrder=0, depthWrite=false so stickers always render on top
     const backing = _buildFan(verts.map(v => centerV.clone().lerp(v, 0.97)), normal, 0x111111, 0);
-    _storeOrig(backing);
+    backing.renderOrder = 0;
+    backing.material.depthWrite = false;
     group.add(backing);
     faceBackings.push(backing);
 
@@ -31,6 +32,7 @@ export function buildMegaminx(geometry) {
     // Center sticker
     const cMesh = _buildFan(_shrink(innerV), normal, geometry.faceColors[geometry.faceNames[fi]], STICKER_LIFT);
     _storeOrig(cMesh);
+    cMesh.renderOrder = 1;
     group.add(cMesh);
     stickerMetas.push({
       mesh:      cMesh,
@@ -53,6 +55,7 @@ export function buildMegaminx(geometry) {
       const e2 = verts[k].clone().lerp(verts[k1], 2/3);
       const eM = _buildQuad(_shrink([e1, e2, innerV[k1], innerV[k]]), normal, 0x888888, STICKER_LIFT);
       _storeOrig(eM);
+      eM.renderOrder = 1;
       group.add(eM);
       eMeshes.push(eM);
       edgeMeshBySlot[ec[k]].push(eM);
@@ -72,6 +75,7 @@ export function buildMegaminx(geometry) {
       const cNext = verts[k].clone().lerp(verts[k1], 1/3);
       const coM = _buildFan(_shrink([cPrev, verts[k], cNext, innerV[k]]), normal, 0x888888, STICKER_LIFT);
       _storeOrig(coM);
+      coM.renderOrder = 1;
       group.add(coM);
       coMeshes.push(coM);
       cornerMeshBySlot[cc[k]].push(coM);
@@ -93,7 +97,7 @@ export function buildMegaminx(geometry) {
   function getMeshesForFace(fi) {
     const cc = geometry.faceCornerCycles[fi];
     const ec = geometry.faceEdgeCycles[fi];
-    const meshes = [faceBackings[fi], faceStickerMeshes[fi].center];
+    const meshes = [faceStickerMeshes[fi].center];
     for (const ci of cc) meshes.push(...cornerMeshBySlot[ci]);
     for (const ei of ec) meshes.push(...edgeMeshBySlot[ei]);
     return meshes;
