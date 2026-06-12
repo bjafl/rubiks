@@ -5,18 +5,18 @@ from pathlib import Path
 from megaminx.moves import get_geometry_data
 
 FACE_COLORS: dict[str, str] = {
-    "U":   "#FFFFFF",
-    "F":   "#3498DB",
+    "U":   "#3498DB",
+    "F":   "#FFFFFF",
     "R":   "#E74C3C",
     "L":   "#F39C12",
-    "BL":  "#2ECC71",
-    "BR":  "#1ABC9C",
-    "D":   "#2C3E50",
-    "DFR": "#9B59B6",
-    "DBR": "#F1C40F",
-    "DB":  "#D35400",
-    "DBL": "#95A5A6",
-    "DFL": "#E91E8C",
+    "BL":  "#E91E8C",
+    "BR":  "#9B59B6",
+    "D":   "#D35400",
+    "dR":  "#1ABC9C",
+    "dBR": "#F1C40F",
+    "B":   "#2C3E50",
+    "dBL": "#95A5A6",
+    "dL":  "#2ECC71",
 }
 
 OUTPUT = Path(__file__).parent.parent / "viewer" / "geometry.json"

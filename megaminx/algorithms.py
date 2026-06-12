@@ -15,10 +15,10 @@ ALGORITHM_SETS: dict[str, list[list[str]]] = {
         ["R-", "U-", "R", "U-", "R-", "U++", "R"],         # Anti-Sune
         ["R", "U++", "R-", "U-", "R", "U-", "R-"],         # Double Sune variant
     ],
-    # Corner Permutation algorithms (L and BR are non-adjacent U-ring faces)
+    # Corner Permutation algorithms (R and L are non-adjacent U-ring faces)
     "CP_ALGS": [
-        ["L", "U-", "BR-", "U", "L-", "U-", "BR", "U"],   # Diagonal corner swap
-        ["U", "L", "U-", "BR-", "U", "L-", "U-", "BR"],   # Adjacent corner swap
+        ["R-", "U", "L", "U-", "R", "U", "L-", "U-"],     # Niklas: 3-cycle
+        ["U", "L", "U-", "R-", "U", "L-", "U-", "R"],     # Niklas⁻¹: inverse 3-cycle
     ],
     # Last Layer combined
     "LL_ALGS": [
@@ -37,8 +37,8 @@ SINGLE_ALGS: dict[str, list[str]] = {
     "CO10":       ["R", "U", "R-", "U", "R", "U-", "R-", "U", "R", "U--", "R-"],
     "SUNE":       ["R", "U", "R-", "U", "R", "U--", "R-"],
     "ANTI_SUNE":  ["R-", "U-", "R", "U-", "R-", "U++", "R"],
-    "NIKLAS":     ["L", "U-", "BR-", "U", "L-", "U-", "BR", "U"],
-    "NIKLAS_INV": ["U-", "BR-", "U", "L", "U-", "BR", "U", "L-"],
+    "NIKLAS":     ["R-", "U", "L", "U-", "R", "U", "L-", "U-"],
+    "NIKLAS_INV": ["U", "L", "U-", "R-", "U", "L-", "U-", "R"],
     "EP1":        ["R++", "U--", "R--", "U-", "R++", "U--", "R--"],
     "EP2":        ["R++", "U++", "R--", "U", "R++", "U++", "R--"],
     "SEXY":       ["R", "U", "R-", "U-"],

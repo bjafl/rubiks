@@ -60,8 +60,8 @@ EP2   R++ U++ R-- U  R++ U++ R--    (7 trekk, invers av EP1)
 ### CP: Niklas
 
 ```
-Niklas    R U- UL- U R- U- UL U         (sykler 3 hjørner, +1 twist på hvert)
-Niklas⁻¹  U- UL- U R U- UL U R-         (invers sykel)
+Niklas    R- U L U- R U L- U-            (sykler fremre 3 hjørner, slot 0→1→2)
+Niklas⁻¹  U L U- R- U L- U- R           (invers sykel)
 ```
 
 ---
@@ -135,7 +135,7 @@ Gjenkjenning og Niklas-strategi: se `megaminx-ll-metode1-3.md`.
 
 ## CO-fix etter Niklas
 
-Niklas tvister 3 syklerte hjørner med **+1** hver (geometri-egenskap, uunngåelig).
+Niklas tvister de 3 syklerte hjørnene (geometri-egenskap, uunngåelig).
 
 Etter standard Niklas (uten AUF) er tilstanden: `[+1, 0, +1, 0, +1]`
 

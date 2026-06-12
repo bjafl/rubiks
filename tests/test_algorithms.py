@@ -79,9 +79,35 @@ def test_library_order_constant():
     assert LIBRARY_ORDER[1] == "CO10"
 
 
+def test_niklas_cycles_ll_corners():
+    """NIKLAS must cycle exactly 3 LL corners; no non-LL corners or edges touched.
+
+    Cycles slots 8, 13, 15 (BR/R/U, F/L/U, F/U/R — the three front LL corners).
+    Frozen: slots 5 (BL/BR/U) and 7 (BL/U/L).
+    """
+    LL_CORNER_SLOTS = (5, 7, 8, 13, 15)
+
+    state = apply_sequence(SOLVED_STATE, SINGLE_ALGS["NIKLAS"])
+
+    changed = [i for i in LL_CORNER_SLOTS if state.cp[i] != i or state.co[i] != 0]
+    assert len(changed) == 3, f"NIKLAS should change exactly 3 LL corners, got: {changed}"
+    assert set(changed) == {8, 13, 15}, f"NIKLAS should cycle slots 8, 13, 15, got: {changed}"
+
+    assert state.cp[5] == 5 and state.co[5] == 0, "NIKLAS must not move slot 5"
+    assert state.cp[7] == 7 and state.co[7] == 0, "NIKLAS must not move slot 7"
+
+    for i in range(20):
+        if i not in LL_CORNER_SLOTS:
+            assert state.cp[i] == i and state.co[i] == 0, f"NIKLAS touched non-LL corner {i}"
+
+    for i in range(30):
+        assert state.ep[i] == i and state.eo[i] == 0, f"NIKLAS touched edge {i}"
+
+
 def test_niklas_and_inv_cancel():
     """NIKLAS followed by NIKLAS_INV should return to solved state."""
     state = apply_sequence(SOLVED_STATE, SINGLE_ALGS["NIKLAS"])
+    assert not is_solved(state), "NIKLAS alone must not be identity"
     state = apply_sequence(state, SINGLE_ALGS["NIKLAS_INV"])
     assert is_solved(state), "NIKLAS + NIKLAS_INV should return to solved"
 

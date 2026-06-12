@@ -99,14 +99,14 @@ Kanter:  e1→e2→e3→e1  (e0, e4 urørt)
 
 ---
 
-## Niklas   `R U- UL- U R- U- UL U`
+## Niklas   `R- U L U- R U L- U-`
 
 ```
-         +1[4]
-        ↗↑              Hjørner: 0→2→4→0 (CCW), alle +1 vridning
-    +1[2]   ○[3]        Slot 1 og 3 frosset
-        ↑↘
-     +1[0]──○[1]        Kanter: INGEN endring ← nøkkelegenskap
+            ○[4]
+
+        [2]   ○[3]      Hjørner: 0→1→2→0 (fremre tre sykler)
+       ↗   ↘            Slot 3 og 4 frosset (BL-siden)
+        [0]→[1]         Kanter: INGEN endring ← nøkkelegenskap
 
          [4]
  ○e4  ╱       ╲ ○e3
@@ -118,11 +118,11 @@ Kanter:  e1→e2→e3→e1  (e0, e4 urørt)
 
 ---
 
-## Niklas⁻¹   `U- UL- U R U- UL U R-`
+## Niklas⁻¹   `U L U- R- U L- U- R`
 
 ```
-Hjørner: 0→4→2→0 (CW), alle +2 vridning
-Slot 1 og 3 frosset
+Hjørner: 0→2→1→0 (invers sykkel)
+Slot 3 og 4 frosset
 
 Kanter: INGEN endring
 ```
@@ -137,8 +137,8 @@ Kanter: INGEN endring
 | CO10 | pos uendret | +2,○,+1,+1,+2 | e1→e4→e3→e1 | e0, e2 |
 | EP1  | 5-sykkel    | ingen         | e1→e3→e2→e1 | e0, e4 |
 | EP2  | 5-sykkel⁻¹  | ingen         | e1→e2→e3→e1 | e0, e4 |
-| Niklas   | 0→2→4→0 | +1,+1,+1 | **ingen**   | alle  |
-| Niklas⁻¹ | 0→4→2→0 | +2,+2,+2 | **ingen**   | alle  |
+| Niklas   | 0→1→2→0 | +0,+2,+1 | **ingen**   | alle  |
+| Niklas⁻¹ | 0→2→1→0 | +2,+1,+0 | **ingen**   | alle  |
 
 ---
 
@@ -209,7 +209,7 @@ Deretter: **EP-fix** (5 kanter forstyrret — 1 EP1/EP2-kall).
 |--------|----------|
 | `R` / `R-` | Høyre flate, 72° CW/CCW |
 | `R++` / `R--` | Høyre flate, 144° CW/CCW |
-| `UL` / `UL-` | Øvre-venstre flate (bak-venstre) |
+| `L` / `L-` | Venstre flate, 72° CW/CCW |
 | `U` / `U-` | Topp, 72° CW/CCW |
 | `U++` / `U--` | Topp, 144° CW/CCW |
 | `AUF_n` | n × U — konjugat-setup |

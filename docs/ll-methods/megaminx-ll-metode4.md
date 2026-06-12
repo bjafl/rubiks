@@ -112,8 +112,8 @@ Eller bruk EP → CP → OCLL (da trenger du ekstra CO-trinn sist).
 ### Niklas
 
 ```
-Niklas    R U- UL- U R- U- UL U    (sykler: UL-hjørne → R-hjørne → front-hjørne)
-Niklas⁻¹  U- UL- U R U- UL U R-   (invers sykel)
+Niklas    R- U L U- R U L- U-      (sykler: fremre tre hjørner, slot 0→1→2)
+Niklas⁻¹  U L U- R- U L- U- R     (invers sykel)
 ```
 
 ### Gjenkjenning
@@ -121,7 +121,7 @@ Niklas⁻¹  U- UL- U R U- UL U R-   (invers sykel)
 | Faste hjørner | Type | Løsning |
 |---|---|---|
 | 5 | Ferdig | – |
-| 2 (i pos 1+3) | 3-sykel | 1 × Niklas |
+| 2 (i slot 3+4) | 3-sykel | 1 × Niklas |
 | 1 | Dobbel-transposisjon | Niklas → 3-sykel → Niklas (2 apps) |
 | 0 | 5-sykel | Maks 3 × Niklas |
 

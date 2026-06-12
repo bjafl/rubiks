@@ -26,9 +26,13 @@ EDGE_FACES: list[tuple[int, int]] = [
     for edge in EDGES
 ]
 
+# Reverse lookups: frozenset of face names → slot index
+_CORNER_INDEX: dict = {frozenset(c): i for i, c in enumerate(CORNERS)}
+_EDGE_INDEX:   dict = {frozenset(e): i for i, e in enumerate(EDGES)}
+
 # ─── Move parser ─────────────────────────────────────────────────────────────
 
-_MOVE_RE = re.compile(r"^([A-Z]+)(\+\+|--|2'|2|[+\-']?)$")
+_MOVE_RE = re.compile(r"^([A-Za-z]+)(\+\+|--|2'|2|[+\-']?)$")
 _SUFFIX_TURNS: dict[str, int] = {
     "": 1, "+": 1, "++": 2, "-": 4, "--": 3,
     "'": 4, "2": 2, "2'": 3,
@@ -154,15 +158,15 @@ def _match_geo_to_cube() -> tuple[list[list[int]], list[np.ndarray]]:
     # NEIGHBORS["U"] = F, L, BL, BR, R in CW order from outside U
     u_name_to_geo: dict[str, int] = {_NB["U"][i]: u_ring_cw[i] for i in range(5)}
 
-    # D-ring: 5 faces adjacent to D, sorted CW from DFL
+    # D-ring: 5 faces adjacent to D, sorted CW from dL
     d_adj = [j for j in range(12) if _geo_adj(d_geo, j)]
-    # DFL is adjacent to both F and L
+    # dL is adjacent to both F and L
     dfl_geo = next(
         j for j in d_adj
         if _geo_adj(j, u_name_to_geo["F"]) and _geo_adj(j, u_name_to_geo["L"])
     )
     d_ring_cw = _cw_ring_order(d_geo, dfl_geo, d_adj)
-    # NEIGHBORS["D"] = DFL, DFR, DBR, DB, DBL in CW order from outside D
+    # NEIGHBORS["D"] = dL, dR, dBR, B, dBL in CW order from outside D
     d_name_to_geo: dict[str, int] = {_NB["D"][i]: d_ring_cw[i] for i in range(5)}
 
     name_to_geo: dict[str, int] = {"U": u_geo, "D": d_geo, **u_name_to_geo, **d_name_to_geo}
@@ -176,28 +180,44 @@ def _match_geo_to_cube() -> tuple[list[list[int]], list[np.ndarray]]:
 _FACE_VERTS, _face_centers = _match_geo_to_cube()
 
 
-def _extract_face_cycle(face_name: str, move_perm: tuple, n: int) -> list[int]:
-    """Extract ordered 5-cycle indices from a permutation tuple."""
-    moved = [i for i in range(n) if move_perm[i] != i]
-    if not moved:
-        return []
-    start = min(moved)
-    cycle = [start]
-    cur = move_perm[start]
-    while cur != start:
-        cycle.append(cur)
-        cur = move_perm[cur]
-    return cycle
+def _geo_face_cycles(fi: int) -> tuple[list[int], list[int]]:
+    """Return (corner_cycle, edge_cycle) in CW geometric vertex order for face fi.
+
+    corner_cycle[k] = slot index of the corner at vertex k.
+    edge_cycle[k]   = slot index of the edge between vertex k and vertex (k+1)%5.
+    Both in the same CW order as _FACE_VERTS[fi].
+    """
+    verts     = _FACE_VERTS[fi]
+    face_name = FACE_NAMES[fi]
+    verts_set = [set(_FACE_VERTS[fi2]) for fi2 in range(12)]
+
+    corner_cycle: list[int] = []
+    edge_cycle:   list[int] = []
+    for k in range(5):
+        v_cur  = verts[k]
+        v_next = verts[(k + 1) % 5]
+
+        # Corner slot: the three faces sharing vertex v_cur
+        other_c = [FACE_NAMES[fi2] for fi2 in range(12)
+                   if fi2 != fi and v_cur in verts_set[fi2]]
+        corner_cycle.append(_CORNER_INDEX[frozenset([face_name] + other_c)])
+
+        # Edge slot: the neighbor face sharing the edge (v_cur, v_next)
+        nb = next(FACE_NAMES[fi2] for fi2 in range(12)
+                  if fi2 != fi and {v_cur, v_next}.issubset(verts_set[fi2]))
+        edge_cycle.append(_EDGE_INDEX[frozenset([face_name, nb])])
+
+    return corner_cycle, edge_cycle
 
 
 def get_geometry_data() -> dict:
     """Return dodecahedron geometry using cube.py face/corner/edge ordering."""
     face_corner_cycles = []
     face_edge_cycles   = []
-    for fi, face_name in enumerate(FACE_NAMES):
-        m = _CUBE_MOVES[face_name]
-        face_corner_cycles.append(_extract_face_cycle(face_name, m.cp, 20))
-        face_edge_cycles.append(_extract_face_cycle(face_name, m.ep, 30))
+    for fi in range(len(FACE_NAMES)):
+        corners, edges = _geo_face_cycles(fi)
+        face_corner_cycles.append(corners)
+        face_edge_cycles.append(edges)
 
     return {
         "face_names":        list(FACE_NAMES),

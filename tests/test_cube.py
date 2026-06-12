@@ -57,11 +57,11 @@ def test_state_is_hashable():
 
 def test_u_corner_indices():
     u_corners = [i for i, c in enumerate(CORNERS) if "U" in c]
-    assert set(u_corners) == {0, 4, 7, 18, 19}
+    assert set(u_corners) == {5, 7, 8, 13, 15}
 
 def test_u_edge_indices():
     u_edges = [i for i, e in enumerate(EDGES) if "U" in e]
-    assert set(u_edges) == {4, 8, 27, 28, 29}
+    assert set(u_edges) == {7, 10, 18, 21, 24}
 
 def test_apply_sequence():
     state = apply_sequence(SOLVED, ["U", "U'"])

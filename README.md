@@ -5,7 +5,7 @@ A Python library that simulates a Megaminx (dodecahedron puzzle), with an IDA* s
 ## Features
 
 - **Accurate state model** — cubie representation (20 corners, 30 edges) with full group-theory validation
-- **WCA move notation** — all 24 atomic moves (`U`, `F`, `FR-`, `U++`, etc.)
+- **WCA move notation** — all 24 atomic moves (`U`, `F`, `R-`, `U++`, etc.)
 - **Correct orientation tracking** — corner/edge orientations change properly under every move
 - **IDA* solver** — find shortest path between any two states, optionally restricted to a named algorithm set
 - **Named algorithms** — Sune, Anti-Sune, Sexy, Sledgehammer and more, organized into sets (CO, CP, LL, EO)
@@ -55,9 +55,9 @@ print(describe_state(state))
 
 # Solve a near-solved state (3 moves away)
 from megaminx.moves import apply_sequence as aseq
-near = aseq(SOLVED_STATE.copy(), ["U", "F", "FR-"])
+near = aseq(SOLVED_STATE.copy(), ["U", "F", "R-"])
 solution = solve_path(near, SOLVED_STATE.copy(), max_depth=6)
-print(solution)   # ['FR', 'F-', 'U-']
+print(solution)   # ['R', 'F-', 'U-']
 ```
 
 ### Apply algorithms
@@ -66,7 +66,7 @@ print(solution)   # ['FR', 'F-', 'U-']
 from megaminx.algorithms import ALGORITHM_SETS, get_single_alg
 from megaminx.moves import apply_sequence
 
-sune = get_single_alg("SUNE")            # ["FR", "U", "FR-", "U", "FR", "U++", "FR-"]
+sune = get_single_alg("SUNE")            # ["R", "U", "R-", "U", "R", "U++", "R-"]
 state = apply_sequence(SOLVED_STATE.copy(), sune)
 ```
 
@@ -78,7 +78,7 @@ from megaminx.algorithms import get_algorithm_set
 solution = solve_path(
     state_a,
     state_b,
-    move_set=["U", "U-", "FR", "FR-"],  # restrict search to these moves
+    move_set=["U", "U-", "R", "R-"],  # restrict search to these moves
     max_depth=12,
 )
 ```
@@ -110,7 +110,7 @@ python -m mcp_server.server
 
 ## Move notation
 
-Faces: `U  F  FR  BR  BL  FL  DFR  DR  DBR  DBL  DFL  D`
+Faces: `U  F  R  BR  BL  L  dR  dBR  B  dBL  dL  D`
 
 | Suffix | Meaning |
 |---|---|

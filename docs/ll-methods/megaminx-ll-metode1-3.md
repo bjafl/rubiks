@@ -10,8 +10,8 @@
 |------|---------|-----------|
 | **EP** | `R++ U-- R-- U- R++ U-- R--` | 3-sykel kanter (mot klokken) |
 | **EP⁻¹** | `R++ U++ R-- U R++ U++ R--` | 3-sykel kanter (med klokken) |
-| **Niklas** | `R U- UL- U R- U- UL U` | 3-sykel hjørner A→C→B |
-| **Niklas⁻¹** | `U- UL- U R U- UL U R-` | 3-sykel hjørner A→B→C |
+| **Niklas** | `R- U L U- R U L- U-` | 3-sykel hjørner (fremre tre) |
+| **Niklas⁻¹** | `U L U- R- U L- U- R` | 3-sykel hjørner (invers) |
 | **Sune** | `R U R- U R U-- R-` | CO: +1 til 3 hjørner |
 | **Anti-Sune** | `R- U- R U- R- U++ R` | CO: +2 til 3 hjørner |
 
@@ -44,14 +44,14 @@ Prøv EP (eller EP⁻¹), tell riktige nabo-kanter, AUF → løs med én app.
 
 Niklas tvister de 3 syklerte hjørnene med +1 (72°-geometri). CO-steget absorberer dette. **Gjør aldri CO før CP.**
 
-### Niklas fixed corners
+### Niklas frosne hjørner
 
 ```
-Posisjon 1   R-hjørne   ← fast
-Posisjon 3   UL-hjørne   ← fast
+Slot 3  BL/U/L  ← fast
+Slot 4  BL/BR/U ← fast  (bakre spiss)
 ```
 
-De to hjørnene som Niklas *ikke* beveger er alltid i UL- og R-sporet.
+De to hjørnene Niklas *ikke* beveger er alltid BL-sidens to hjørner.
 
 ### Gjenkjenning
 
@@ -60,7 +60,7 @@ Tell topp-hjørner på riktig plass (uavhengig av orientering).
 | Faste hjørner | Type | Løsning |
 |---|---|---|
 | 5 | Ferdig | – |
-| 2 | 3-sykel | AUF de 2 riktige til pos 1+3 → Niklas (1 app) |
+| 2 | 3-sykel | AUF de 2 riktige til slot 3+4 → Niklas (1 app) |
 | 1 | Dobbel-transposisjon | Niklas uten AUF → gir 3-sykel → løs over (2 apps) |
 | 0 | 5-sykel | Niklas → tell → gjenta. Maks 3 apps |
 
@@ -146,5 +146,5 @@ Forventet apps per løsning: **5–9** (inkl. EP-fix etter CO)
 | `U` / `U-` | Topp 72° med/mot klokken |
 | `U++` / `U--` | Topp 144° med/mot klokken |
 | `R` / `R-` | Høyre flate, 72° med/mot klokken |
-| `UL` / `UL-` | Øvre-venstre flate (bak-venstre) |
+| `L` / `L-` | Venstre flate, 72° med/mot klokken |
 | `++` | Dobbel (144°), kan skrives som `2` i noen notasjoner |

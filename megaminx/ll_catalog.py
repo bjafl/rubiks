@@ -13,9 +13,9 @@ from pathlib import Path
 from megaminx.cube import MegaminxState, SOLVED, apply_move
 
 # LL piece slots (corners and edges adjacent to the U face)
-# Index 4 appears in both tuples — no conflict because cp/co and ep/eo are separate arrays.
-LL_CORNER_SLOTS: tuple[int, ...] = (0, 4, 7, 18, 19)
-LL_EDGE_SLOTS: tuple[int, ...]   = (4, 8, 27, 28, 29)
+# Index 7 appears in both tuples — no conflict because cp/co and ep/eo are separate arrays.
+LL_CORNER_SLOTS: tuple[int, ...] = (5, 7, 8, 13, 15)
+LL_EDGE_SLOTS: tuple[int, ...]   = (7, 10, 18, 21, 24)
 
 _LL_CORNER_SET = frozenset(LL_CORNER_SLOTS)
 _LL_EDGE_SET   = frozenset(LL_EDGE_SLOTS)

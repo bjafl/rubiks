@@ -16,17 +16,17 @@ import random
 
 NEIGHBORS: dict[str, list[str]] = {
     "U":   ["F", "L", "BL", "BR", "R"],
-    "F":   ["U", "R", "DFR", "DFL", "L"],
-    "R":   ["U", "BR", "DBR", "DFR", "F"],
-    "BR":  ["U", "BL", "DB", "DBR", "R"],
-    "BL":  ["U", "L", "DBL", "DB", "BR"],
-    "L":   ["U", "F", "DFL", "DBL", "BL"],
-    "D":   ["DFL", "DFR", "DBR", "DB", "DBL"],
-    "DFR": ["DFL", "F", "R", "DBR", "D"],
-    "DBR": ["DFR", "R", "BR", "DB", "D"],
-    "DB":  ["DBR", "BR", "BL", "DBL", "D"],
-    "DBL": ["DB", "BL", "L", "DFL", "D"],
-    "DFL": ["DBL", "L", "F", "DFR", "D"],
+    "F":   ["U", "R", "dR", "dL", "L"],
+    "R":   ["U", "BR", "dBR", "dR", "F"],
+    "BR":  ["U", "BL", "B", "dBR", "R"],
+    "BL":  ["U", "L", "dBL", "B", "BR"],
+    "L":   ["U", "F", "dL", "dBL", "BL"],
+    "D":   ["dL", "dR", "dBR", "B", "dBL"],
+    "dR":  ["dL", "F", "R", "dBR", "D"],
+    "dBR": ["dR", "R", "BR", "B", "D"],
+    "B":   ["dBR", "BR", "BL", "dBL", "D"],
+    "dBL": ["B", "BL", "L", "dL", "D"],
+    "dL":  ["dBL", "L", "F", "dR", "D"],
 }
 FACES: list[str] = list(NEIGHBORS)
 

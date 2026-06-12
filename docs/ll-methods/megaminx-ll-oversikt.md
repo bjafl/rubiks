@@ -27,7 +27,7 @@ Se `megaminx-ll-metode1-3.md` for fullstendig referanse.
 
 **Alger:**
 - EP: `R++ U-- R-- U- R++ U-- R--`
-- CP: Niklas `R U- UL- U R- U- UL U`
+- CP: Niklas `R- U L U- R U L- U-`
 - CO: Sune `R U R- U R U-- R-`
 
 ---

@@ -228,19 +228,20 @@ Sykkel: e1 ──→ e3 ──→ e4 ──→ e1   (same som CO9)
 
 ---
 
-### Niklas   `R U- UL- U R- U- UL U`
+### Niklas   `R- U L U- R U L- U-`
 
-**Hjørner** — ren 3-sykkel av annenhver slot, alle +1 twist:
+**Hjørner** — ren 3-sykkel av de tre fremre slotene:
 
 ```
-            +1[4]
-           ↗↑
-       +1[2]   ○[3]
-           ↑↘
-        +1[0]───○[1]
+            ○[4]
+             
+        [2]   ○[3]
+       ↗   ↘
+        [0]→[1]
 
-Sykkel: 0 → 2 → 4 → 0  (CCW), alle +1 vridning
-Slot 1 og 3 frosset.
+Sykkel: 0 → 1 → 2 → 0
+Slot 3 og 4 frosset (BL-siden).
+Vridning per steg: 0→1: +0, 1→2: +2, 2→0: +1
 ```
 
 **Kanter** — ingen endring:
@@ -258,13 +259,14 @@ Alle kanter uendret. ← nøkkelegenskap
 
 ---
 
-### Niklas⁻¹   `U- UL- U R U- UL U R-`
+### Niklas⁻¹   `U L U- R- U L- U- R`
 
-**Hjørner** — invers sykkel, alle +2 twist:
+**Hjørner** — invers sykkel (0 → 2 → 1 → 0):
 
 ```
-Sykkel: 0 → 4 → 2 → 0  (CW), alle +2 vridning
-Slot 1 og 3 frosset.
+Sykkel: 0 → 2 → 1 → 0
+Slot 3 og 4 frosset.
+Vridning per steg: 0→2: +2, 2→1: +1, 1→0: +0
 ```
 
 **Kanter** — ingen endring (identisk med Niklas).
@@ -278,8 +280,8 @@ Slot 1 og 3 frosset.
 | CO9 | 0, 2, 3, 4 (pos uendret) | +1, +2, +2, +1 | e1→e3→e4→e1 | e0, e2 |
 | CO10 | 0, 2, 3, 4 (pos uendret) | +2, +1, +1, +2 | e1→e4→e3→e1 | e0, e2 |
 | Sune | 0, 2, 3, 4 (dobbel bytte) | +1, 0, +1, +1 | e1→e3→e4→e1 | e0, e2 |
-| Niklas | 0, 2, 4 (3-sykkel) | +1, +1, +1 | **ingen** | alle |
-| Niklas⁻¹ | 0, 2, 4 (3-sykkel) | +2, +2, +2 | **ingen** | alle |
+| Niklas | 0, 1, 2 (3-sykkel) | +0, +2, +1 | **ingen** | alle |
+| Niklas⁻¹ | 0, 2, 1 (3-sykkel) | +2, +1, +0 | **ingen** | alle |
 | EP1 | alle 5 (5-sykkel) | ingen | e1→e3→e2→e1 | e0, e4 |
 | EP2 | alle 5 (5-sykkel) | ingen | e1→e2→e3→e1 | e0, e4 |
 

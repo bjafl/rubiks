@@ -15,7 +15,7 @@ def test_face_names_equal_cube_faces():
 
 
 def test_all_12_wca_names_present():
-    expected = {"U", "D", "F", "R", "BR", "BL", "L", "DFR", "DBR", "DB", "DBL", "DFL"}
+    expected = {"U", "D", "F", "R", "BR", "BL", "L", "dR", "dBR", "B", "dBL", "dL"}
     assert set(FACE_NAMES) == expected
 
 
@@ -51,14 +51,14 @@ def test_bl_is_back_left():
 
 
 def test_lower_faces_have_negative_y():
-    for name in ["DFR", "DBR", "DB", "DBL", "DFL"]:
+    for name in ["dR", "dBR", "B", "dBL", "dL"]:
         assert c(name)[1] <= 0, f"{name} should have non-positive Y (below or at equator)"
 
 
 def test_opposite_pairs_sum_to_zero():
     """Antipodal face pairs sum to zero."""
-    pairs = [("U", "D"), ("F", "DB"), ("R", "DBL"), ("L", "DBR"),
-             ("BR", "DFL"), ("BL", "DFR")]
+    pairs = [("U", "D"), ("F", "B"), ("R", "dBL"), ("L", "dBR"),
+             ("BR", "dL"), ("BL", "dR")]
     for a, b in pairs:
         s = c(a) + c(b)
         assert np.linalg.norm(s) < 1e-6, f"Pair {a}↔{b} not antipodal: sum={s}"

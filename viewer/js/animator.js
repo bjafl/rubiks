@@ -37,7 +37,7 @@ export function createAnimator(scene, geometry, getMeshesForFace) {
    * Animate a single move. Calls onComplete() when the tween finishes
    * (or immediately if already animating or move is unrecognised).
    *
-   * @param {string}   moveName   — e.g. "R", "U-", "BR++", "DFR2'"
+   * @param {string}   moveName   — e.g. "R", "U-", "BR++", "dR2'"
    * @param {number}   durationMs — total tween duration in milliseconds
    * @param {boolean}  reversed   — negate the rotation angle (for step_backward)
    * @param {function} onComplete — called after baking; apply new state here
