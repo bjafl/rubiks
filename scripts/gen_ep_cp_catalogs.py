@@ -36,35 +36,35 @@ from megaminx.ll_catalog import (
 # Each algorithm solves the corresponding canonical EP case while preserving CO.
 # CP may change freely (handled by subsequent CP stage).
 EP_ALGORITHMS: dict[int, str] = {
-    0:  "R- F- U- F U R F- U R F R- F- U- F",       # 14t 3cyc
-    1:  "F- U F U- R- F- R F U F- U- R- F R",        # 14t 3cyc
-    2:  "R- F++ R F++ R- F R F-- R- F- R F-- R- F-- R F-- F",  # 17t 2x2
-    3:  "F-- R- F- R F- R- F++ R F-- R- F++ R F++ R- F R",     # 16t 3cyc
-    4:  "F-- R- F++ R F++ R- F R F-- R- F- R F- R- F++ R",     # 16t 3cyc
-    5:  "R- F- R F-- R- F-- R F++ R- F-- R F R- F R F++",      # 16t 3cyc
-    6:  "U- F- U R U- F++ U F++ U- F U R- F-- U- F-- U F",     # 17t 3cyc
-    7:  "F- R- F- R F-- R- F-- R F-- F- R F R- F R F-- R- F- F",  # 19t 2x2
-    8:  "R- F-- R F R- F R F++ R- F- R F-- R- F-- R F++",      # 16t 3cyc
-    9:  "R- F++ U- F U R- F-- U- F U F R U- F R F-",           # 17t 3cyc
-    10: "F- F- R F R- F R F-- R- F- R- F++ R F++ R- F R",      # 17t 2x2
-    11: "",  # 5-cycle — solved by AUF rotation alone (0 algorithm moves)
+    0:  "U- F- U- F R F- R- U R F R- U",
+    1:  "R++ U-- F U- F- U F- R- F R U++ R--",
+    2:  "",  # NOT FOUND
+    3:  "",  # NOT FOUND
+    4:  "",  # NOT FOUND
+    5:  "",  # NOT FOUND
+    6:  "",  # NOT FOUND
+    7:  "",  # NOT FOUND
+    8:  "",  # NOT FOUND
+    9:  "",  # NOT FOUND
+    10: "",  # NOT FOUND
+    11:  "",  # identity — solved by AUF rotation alone
 }
 
 # ── CP algorithms (found via bidirectional BFS, max depth 18) ────────────────
 # Each algorithm solves the corresponding canonical CP case while preserving CO AND EP.
 CP_ALGORITHMS: dict[int, str] = {
-    0:  "F F- R F-- R- F- R F-- R- F++ R- F- R F-- R- F-- R F",   # 18t 3cyc
-    1:  "F- R- F++ R F++ R- F R F-- R F++ R- F R F++ R- F F-",    # 18t 3cyc
-    2:  "F-- R F-- U- F- U F- U- F- R- F R F++ U F- R-",          # 16t 2x2
-    3:  "U R F++ R- U F U- R U R- F- R U- F-- R- U-",             # 16t 3cyc
-    4:  "R F++ R- U F U- R U R- F- R U- F-- R-",                  # 14t 3cyc
-    5:  "U R F++ U R- F R U- R- U F- U- R F-- R- U-",             # 16t 3cyc
-    6:  "F- R F-- R- F-- R F- R- F++ F R- F++ R F R- F++ R F--",  # 18t 3cyc
-    7:  "R- F- U- F U F- U- F U F- U- F U R",                     # 14t 2x2
-    8:  "R F++ U R- F R U- R- U F- U- R F-- R-",                  # 14t 3cyc
-    9:  "F++ R- F-- R F- R- F-- R F- F-- R F R- F++ R F++ R- F",  # 18t 3cyc
-    10: "U F-- U- F- U F U- F-- R- U F- U- F-- R F R- F++ R",     # 18t 2x2
-    11: "",  # 5-cycle — solved by AUF rotation alone (0 algorithm moves)
+    0:  "R U++ F- U-- R U++ R- F R U-- R--",
+    1:  "R++ U++ R- F- R U-- R- U++ F U-- R-",
+    2:  "F-- R-- F U-- R++ F-- R-- F U++ F- R++ F-- U-- F- U++ F",
+    3:  "R- U R++ U F- U- F R-- F- U F U-- R",
+    4:  "U R U R- F- R U- R- U F U--",
+    5:  "R- U++ F- U- F R++ F- U F U- R-- U- R",
+    6:  "F++ U- F++ R F-- U F++ U- R- U F",
+    7:  "U++ F U F-- R F R- U- R F- R- F R- U++ R U",
+    8:  "U++ F- U- R U R- F R U- R- U-",
+    9:  "F- U- R U F- U- F R- F- U F++",
+    10: "",  # NOT FOUND
+    11:  "",  # identity — solved by AUF rotation alone
 }
 
 MOVE_SET = ["R", "R-", "F", "F-", "F++", "F--", "U", "U-", "U++", "U--"]
