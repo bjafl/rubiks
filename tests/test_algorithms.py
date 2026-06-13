@@ -40,13 +40,13 @@ def test_sune_six_times_is_identity():
 def test_single_algs_has_co9():
     assert "CO9" in SINGLE_ALGS
     assert SINGLE_ALGS["CO9"] == [
-        "R", "U++", "R-", "U-", "R", "U", "R-", "U-", "R", "U-", "R-"
+        "R", "F++", "R-", "F-", "R", "F", "R-", "F-", "R", "F-", "R-"
     ]
 
 def test_single_algs_has_co10():
     assert "CO10" in SINGLE_ALGS
     assert SINGLE_ALGS["CO10"] == [
-        "R", "U", "R-", "U", "R", "U-", "R-", "U", "R", "U--", "R-"
+        "R", "F", "R-", "F", "R", "F-", "R-", "F", "R", "F--", "R-"
     ]
 
 def test_single_algs_has_niklas():
@@ -80,25 +80,25 @@ def test_library_order_constant():
 
 
 def test_niklas_cycles_ll_corners():
-    """NIKLAS must cycle exactly 3 LL corners; no non-LL corners or edges touched.
+    """NIKLAS must cycle exactly 3 F-layer corners; no other corners or edges touched.
 
-    Cycles slots 8, 13, 15 (BR/R/U, F/L/U, F/U/R — the three front LL corners).
-    Frozen: slots 5 (BL/BR/U) and 7 (BL/U/L).
+    Cycles slots 8, 13, 14 (BR/R/F, F/R/U, F/U/L — the three affected front corners).
+    Frozen: slots 5 (BL/BR/F) and 6 (BL/F/L).
     """
-    LL_CORNER_SLOTS = (5, 7, 8, 13, 15)
+    F_CORNER_SLOTS = (5, 6, 8, 13, 14)
 
     state = apply_sequence(SOLVED_STATE, SINGLE_ALGS["NIKLAS"])
 
-    changed = [i for i in LL_CORNER_SLOTS if state.cp[i] != i or state.co[i] != 0]
-    assert len(changed) == 3, f"NIKLAS should change exactly 3 LL corners, got: {changed}"
-    assert set(changed) == {8, 13, 15}, f"NIKLAS should cycle slots 8, 13, 15, got: {changed}"
+    changed = [i for i in F_CORNER_SLOTS if state.cp[i] != i or state.co[i] != 0]
+    assert len(changed) == 3, f"NIKLAS should change exactly 3 F corners, got: {changed}"
+    assert set(changed) == {8, 13, 14}, f"NIKLAS should cycle slots 8, 13, 14, got: {changed}"
 
     assert state.cp[5] == 5 and state.co[5] == 0, "NIKLAS must not move slot 5"
-    assert state.cp[7] == 7 and state.co[7] == 0, "NIKLAS must not move slot 7"
+    assert state.cp[6] == 6 and state.co[6] == 0, "NIKLAS must not move slot 6"
 
     for i in range(20):
-        if i not in LL_CORNER_SLOTS:
-            assert state.cp[i] == i and state.co[i] == 0, f"NIKLAS touched non-LL corner {i}"
+        if i not in F_CORNER_SLOTS:
+            assert state.cp[i] == i and state.co[i] == 0, f"NIKLAS touched non-F corner {i}"
 
     for i in range(30):
         assert state.ep[i] == i and state.eo[i] == 0, f"NIKLAS touched edge {i}"

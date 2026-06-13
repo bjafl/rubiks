@@ -28,10 +28,12 @@ def test_d_lowest_y():
 
 
 def test_f_is_frontmost():
-    """F: adjacent to U, most negative z (toward solver)."""
+    """F: adjacent to U, closest to camera at (0, 5, 3) among U-ring faces."""
+    import numpy as np
+    camera = np.array([0.0, 5.0, 3.0])
     u_ring_names = ["F", "R", "BR", "BL", "L"]
-    f_z = c("F")[2]
-    assert all(f_z <= c(n)[2] for n in u_ring_names)
+    f_dist = np.linalg.norm(camera - c("F"))
+    assert all(f_dist <= np.linalg.norm(camera - c(n)) for n in u_ring_names)
 
 
 def test_r_is_rightmost():
@@ -57,7 +59,7 @@ def test_lower_faces_have_negative_y():
 
 def test_opposite_pairs_sum_to_zero():
     """Antipodal face pairs sum to zero."""
-    pairs = [("U", "D"), ("F", "B"), ("R", "dBL"), ("L", "dBR"),
+    pairs = [("U", "B"), ("F", "D"), ("R", "dBL"), ("L", "dBR"),
              ("BR", "dL"), ("BL", "dR")]
     for a, b in pairs:
         s = c(a) + c(b)

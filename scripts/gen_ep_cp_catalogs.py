@@ -5,6 +5,16 @@ Generate EP and CP catalog JSON files from hardcoded verified algorithms.
 These were found via bidirectional BFS (not pure DFS, which times out at depth 14+).
 Run this script to regenerate ll_catalog/ep.json and ll_catalog/cp.json.
 
+NOTE: After the U↔F face rename (2026-06-13), the LL moved from the physical front
+face to the physical top face. The EP and CP algorithm strings (EP_ALGORITHMS,
+CP_ALGORITHMS) below were originally tuned for the old LL and are no longer valid —
+they now produce empty solution lists for all non-trivial cases. The CO catalog
+(co.json) was regenerated correctly via CatalogBuilder and is unaffected.
+
+To fix: run a bidirectional BFS over the new LL state space (LL_EDGE_SLOTS=(18,19,22,25,26),
+LL_CORNER_SLOTS=(13,14,15,18,19)) to find replacement algorithms for EP_ALGORITHMS[0..10]
+and CP_ALGORITHMS[0..10], then re-run this script.
+
 Usage:
     python3 scripts/gen_ep_cp_catalogs.py [--output-dir ll_catalog]
 """
@@ -26,38 +36,38 @@ from megaminx.ll_catalog import (
 # Each algorithm solves the corresponding canonical EP case while preserving CO.
 # CP may change freely (handled by subsequent CP stage).
 EP_ALGORITHMS: dict[int, str] = {
-    0:  "R- U- F- U F R U- F R U R- U- F- U",       # 14t 3cyc
-    1:  "U- F U F- R- U- R U F U- F- R- U R",        # 14t 3cyc
-    2:  "R- U++ R U++ R- U R U-- R- U- R U-- R- U-- R U-- U",  # 17t 2x2
-    3:  "U-- R- U- R U- R- U++ R U-- R- U++ R U++ R- U R",     # 16t 3cyc
-    4:  "U-- R- U++ R U++ R- U R U-- R- U- R U- R- U++ R",     # 16t 3cyc
-    5:  "R- U- R U-- R- U-- R U++ R- U-- R U R- U R U++",      # 16t 3cyc
-    6:  "F- U- F R F- U++ F U++ F- U F R- U-- F- U-- F U",     # 17t 3cyc
-    7:  "U- R- U- R U-- R- U-- R U-- U- R U R- U R U-- R- U- U",  # 19t 2x2
-    8:  "R- U-- R U R- U R U++ R- U- R U-- R- U-- R U++",      # 16t 3cyc
-    9:  "R- U++ F- U F R- U-- F- U F U R F- U-- F R U-",       # 17t 3cyc
-    10: "U- U- R U R- U R U-- R- U- R- U++ R U++ R- U R",      # 17t 2x2
+    0:  "R- F- U- F U R F- U R F R- F- U- F",       # 14t 3cyc
+    1:  "F- U F U- R- F- R F U F- U- R- F R",        # 14t 3cyc
+    2:  "R- F++ R F++ R- F R F-- R- F- R F-- R- F-- R F-- F",  # 17t 2x2
+    3:  "F-- R- F- R F- R- F++ R F-- R- F++ R F++ R- F R",     # 16t 3cyc
+    4:  "F-- R- F++ R F++ R- F R F-- R- F- R F- R- F++ R",     # 16t 3cyc
+    5:  "R- F- R F-- R- F-- R F++ R- F-- R F R- F R F++",      # 16t 3cyc
+    6:  "U- F- U R U- F++ U F++ U- F U R- F-- U- F-- U F",     # 17t 3cyc
+    7:  "F- R- F- R F-- R- F-- R F-- F- R F R- F R F-- R- F- F",  # 19t 2x2
+    8:  "R- F-- R F R- F R F++ R- F- R F-- R- F-- R F++",      # 16t 3cyc
+    9:  "R- F++ U- F U R- F-- U- F U F R U- F R F-",           # 17t 3cyc
+    10: "F- F- R F R- F R F-- R- F- R- F++ R F++ R- F R",      # 17t 2x2
     11: "",  # 5-cycle — solved by AUF rotation alone (0 algorithm moves)
 }
 
 # ── CP algorithms (found via bidirectional BFS, max depth 18) ────────────────
 # Each algorithm solves the corresponding canonical CP case while preserving CO AND EP.
 CP_ALGORITHMS: dict[int, str] = {
-    0:  "U U- R U-- R- U- R U-- R- U++ R- U- R U-- R- U-- R U",   # 18t 3cyc
-    1:  "U- R- U++ R U++ R- U R U-- R U++ R- U R U++ R- U U-",    # 18t 3cyc
-    2:  "U-- R U-- F- U- F U- F- U- R- U R U++ F U- R-",          # 16t 2x2
-    3:  "F R U++ R- F U F- R F R- U- R F- U-- R- F-",             # 16t 3cyc
-    4:  "R U++ R- F U F- R F R- U- R F- U-- R-",                  # 14t 3cyc
-    5:  "F R U++ F R- U R F- R- F U- F- R U-- R- F-",             # 16t 3cyc
-    6:  "U- R U-- R- U-- R U- R- U++ U R- U++ R U R- U++ R U--",  # 18t 3cyc
-    7:  "R- U- F- U F U- F- U F U- F- U F R",                     # 14t 2x2
-    8:  "R U++ F R- U R F- R- F U- F- R U-- R-",                  # 14t 3cyc
-    9:  "U++ R- U-- R U- R- U-- R U- U-- R U R- U++ R U++ R- U",  # 18t 3cyc
-    10: "F U-- F- U- F U F- U-- R- F U- F- U-- R U R- U++ R",     # 18t 2x2
+    0:  "F F- R F-- R- F- R F-- R- F++ R- F- R F-- R- F-- R F",   # 18t 3cyc
+    1:  "F- R- F++ R F++ R- F R F-- R F++ R- F R F++ R- F F-",    # 18t 3cyc
+    2:  "F-- R F-- U- F- U F- U- F- R- F R F++ U F- R-",          # 16t 2x2
+    3:  "U R F++ R- U F U- R U R- F- R U- F-- R- U-",             # 16t 3cyc
+    4:  "R F++ R- U F U- R U R- F- R U- F-- R-",                  # 14t 3cyc
+    5:  "U R F++ U R- F R U- R- U F- U- R F-- R- U-",             # 16t 3cyc
+    6:  "F- R F-- R- F-- R F- R- F++ F R- F++ R F R- F++ R F--",  # 18t 3cyc
+    7:  "R- F- U- F U F- U- F U F- U- F U R",                     # 14t 2x2
+    8:  "R F++ U R- F R U- R- U F- U- R F-- R-",                  # 14t 3cyc
+    9:  "F++ R- F-- R F- R- F-- R F- F-- R F R- F++ R F++ R- F",  # 18t 3cyc
+    10: "U F-- U- F- U F U- F-- R- U F- U- F-- R F R- F++ R",     # 18t 2x2
     11: "",  # 5-cycle — solved by AUF rotation alone (0 algorithm moves)
 }
 
-MOVE_SET = ["R", "R-", "F", "F-", "U", "U-", "U++", "U--"]
+MOVE_SET = ["R", "R-", "F", "F-", "F++", "F--", "U", "U-", "U++", "U--"]
 
 
 def apply_moves(state, moves):
@@ -99,13 +109,20 @@ def build_catalog(stage, alg_dict: dict[int, str], stage_name: str) -> StageCata
             solutions=solutions,
         ))
 
-        # Verify
+        # Verify — drop solutions that don't actually solve the case
         start = _make_ll_state(ll_co, ll_cp, ll_ep)
         result = apply_moves(start, moves) if moves else start
         if stage.is_solved(result):
             ok += 1
         else:
-            print(f"  FAIL: {stage_name}_{idx:03d}")
+            if moves:
+                print(f"  FAIL (solution dropped): {stage_name}_{idx:03d}")
+            cases[-1] = Case(
+                case_id=cases[-1].case_id,
+                canonical_state=cases[-1].canonical_state,
+                auf_variants=cases[-1].auf_variants,
+                solutions=[],
+            )
 
     print(f"  {stage_name.upper()}: {ok}/{len(cases_list)} verified")
     return StageCatalog(

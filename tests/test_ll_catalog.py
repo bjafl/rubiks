@@ -13,12 +13,12 @@ from megaminx.ll_catalog import (
 
 
 def test_ll_corner_slots():
-    assert LL_CORNER_SLOTS == (5, 7, 8, 13, 15)
+    assert LL_CORNER_SLOTS == (13, 14, 15, 18, 19)
     assert len(LL_CORNER_SLOTS) == 5
 
 
 def test_ll_edge_slots():
-    assert LL_EDGE_SLOTS == (7, 10, 18, 21, 24)
+    assert LL_EDGE_SLOTS == (18, 19, 22, 25, 26)
     assert len(LL_EDGE_SLOTS) == 5
 
 
@@ -80,8 +80,8 @@ def test_is_solved_co_stage_accepts_permuted_cp():
     # CO_STAGE only checks CO, not CP — a state with CO=0 but scrambled CP should pass
     # Build state: swap two LL corner pieces but keep orientations 0
     cp = list(SOLVED.cp)
-    # Swap slots 5 and 7 (both LL corners)
-    cp[5], cp[7] = cp[7], cp[5]
+    # Swap slots 13 and 14 (both LL corners, adjacent to U)
+    cp[13], cp[14] = cp[14], cp[13]
     state = MegaminxState(tuple(cp), SOLVED.co, SOLVED.ep, SOLVED.eo)
     assert CO_STAGE.is_solved(state)
 
@@ -239,7 +239,7 @@ def test_find_solutions_for_co_state():
     # Use first case from enumerate_cases — guaranteed valid (sum ≡ 0 mod 3)
     ll_co, ll_cp, ll_ep = enumerate_cases(CO_STAGE)[0]
     state = _make_ll_state(ll_co, ll_cp, ll_ep)
-    move_set = ["R", "R-", "U", "U-", "U++", "U--"]
+    move_set = ["R", "R-", "F", "F-", "F++", "F--", "U", "U-", "U++", "U--"]
     solutions = _find_solutions(state, CO_STAGE, move_set, max_depth=8)
     assert len(solutions) > 0, "Expected at least one CO solution at depth 8"
     for sol in solutions:
@@ -252,7 +252,7 @@ def test_find_solutions_for_co_state():
 def test_solutions_sorted_by_length():
     ll_co, ll_cp, ll_ep = enumerate_cases(CO_STAGE)[0]
     state = _make_ll_state(ll_co, ll_cp, ll_ep)
-    solutions = _find_solutions(state, CO_STAGE, ["R", "R-", "U", "U-", "U++", "U--"], 8)
+    solutions = _find_solutions(state, CO_STAGE, ["R", "R-", "F", "F-", "F++", "F--", "U", "U-", "U++", "U--"], 8)
     assert len(solutions) >= 2, "Expected multiple solutions to verify sort order"
     for i in range(len(solutions) - 1):
         assert solutions[i].length <= solutions[i + 1].length
@@ -292,13 +292,13 @@ def test_catalog_builder_case_ids_unique():
 
 def test_catalog_builder_solutions_solve_case():
     # Every solution must bring the canonical start state to is_solved.
-    # At depth 7 with ⟨R,U⟩, 5 of 16 CO cases are reachable — enough to test correctness.
-    move_set = ["R", "R-", "U", "U-", "U++", "U--"]
+    # At depth 7 with ⟨R,F,U⟩, 12 of 16 CO cases are reachable — enough to test correctness.
+    move_set = ["R", "R-", "F", "F-", "F++", "F--", "U", "U-", "U++", "U--"]
     builder = CatalogBuilder(CO_STAGE, move_set, max_depth=7)
     catalog = builder.build()
     cases_with_solutions = sum(1 for c in catalog.cases if c.solutions)
-    assert cases_with_solutions >= 3, (
-        f"Expected >= 3 CO cases solvable at depth 7, got {cases_with_solutions}"
+    assert cases_with_solutions >= 5, (
+        f"Expected >= 5 CO cases solvable at depth 7, got {cases_with_solutions}"
     )
     for case in catalog.cases:
         ll_co = tuple(case.canonical_state["co"])

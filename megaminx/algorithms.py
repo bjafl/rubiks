@@ -9,40 +9,40 @@
 #   F  -> front face
 
 ALGORITHM_SETS: dict[str, list[list[str]]] = {
-    # Corner Orientation algorithms (CO — also permutes top edges as side effect)
+    # Corner Orientation algorithms
     "CO_ALGS": [
-        ["R", "U", "R-", "U", "R", "U--", "R-"],          # Sune
-        ["R-", "U-", "R", "U-", "R-", "U++", "R"],         # Anti-Sune
-        ["R", "U++", "R-", "U-", "R", "U-", "R-"],         # Double Sune variant
+        ["R", "F", "R-", "F", "R", "F--", "R-"],          # Sune
+        ["R-", "F-", "R", "F-", "R-", "F++", "R"],         # Anti-Sune
+        ["R", "F++", "R-", "F-", "R", "F-", "R-"],         # Double Sune variant
     ],
-    # Corner Permutation algorithms (R and L are non-adjacent U-ring faces)
+    # Corner Permutation algorithms (R and L are non-adjacent F-ring faces)
     "CP_ALGS": [
-        ["R-", "U", "L", "U-", "R", "U", "L-", "U-"],     # Niklas: 3-cycle
-        ["U", "L", "U-", "R-", "U", "L-", "U-", "R"],     # Niklas⁻¹: inverse 3-cycle
+        ["R-", "F", "L", "F-", "R", "F", "L-", "F-"],     # Niklas: 3-cycle
+        ["F", "L", "F-", "R-", "F", "L-", "F-", "R"],     # Niklas⁻¹: inverse 3-cycle
     ],
     # Last Layer combined
     "LL_ALGS": [
-        ["R", "U", "R-", "U-"],                             # Sexy move
-        ["R-", "F", "R", "F-"],                             # Sledgehammer
-        ["F", "R", "U-", "R-", "U-", "R", "U", "R-", "F-"],  # T-perm
+        ["R", "F", "R-", "F-"],                             # Sexy move
+        ["R-", "U", "R", "U-"],                             # Sledgehammer
+        ["U", "R", "F-", "R-", "F-", "R", "F", "R-", "U-"],  # T-perm
     ],
     # Edge orientation
     "EO_ALGS": [
-        ["F", "R", "U", "R-", "U-", "F-"],                 # OLL edge flip
+        ["U", "R", "F", "R-", "F-", "U-"],                 # OLL edge flip
     ],
 }
 
 SINGLE_ALGS: dict[str, list[str]] = {
-    "CO9":        ["R", "U++", "R-", "U-", "R", "U", "R-", "U-", "R", "U-", "R-"],
-    "CO10":       ["R", "U", "R-", "U", "R", "U-", "R-", "U", "R", "U--", "R-"],
-    "SUNE":       ["R", "U", "R-", "U", "R", "U--", "R-"],
-    "ANTI_SUNE":  ["R-", "U-", "R", "U-", "R-", "U++", "R"],
-    "NIKLAS":     ["R-", "U", "L", "U-", "R", "U", "L-", "U-"],
-    "NIKLAS_INV": ["U", "L", "U-", "R-", "U", "L-", "U-", "R"],
-    "EP1":        ["R++", "U--", "R--", "U-", "R++", "U--", "R--"],
-    "EP2":        ["R++", "U++", "R--", "U", "R++", "U++", "R--"],
-    "SEXY":       ["R", "U", "R-", "U-"],
-    "SLEDGE":     ["R-", "F", "R", "F-"],
+    "CO9":        ["R", "F++", "R-", "F-", "R", "F", "R-", "F-", "R", "F-", "R-"],
+    "CO10":       ["R", "F", "R-", "F", "R", "F-", "R-", "F", "R", "F--", "R-"],
+    "SUNE":       ["R", "F", "R-", "F", "R", "F--", "R-"],
+    "ANTI_SUNE":  ["R-", "F-", "R", "F-", "R-", "F++", "R"],
+    "NIKLAS":     ["R-", "F", "L", "F-", "R", "F", "L-", "F-"],
+    "NIKLAS_INV": ["F", "L", "F-", "R-", "F", "L-", "F-", "R"],
+    "EP1":        ["R++", "F--", "R--", "F-", "R++", "F--", "R--"],
+    "EP2":        ["R++", "F++", "R--", "F", "R++", "F++", "R--"],
+    "SEXY":       ["R", "F", "R-", "F-"],
+    "SLEDGE":     ["R-", "U", "R", "U-"],
 }
 
 LIBRARY_ORDER: list[str] = [

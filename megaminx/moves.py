@@ -147,29 +147,30 @@ def _match_geo_to_cube() -> tuple[list[list[int]], list[np.ndarray]]:
     """Return (face_verts_list, face_centers) ordered to match FACES."""
     from megaminx.cube import FACES as _F, NEIGHBORS as _NB
 
-    # U = face with highest y; D = antipodal face (center ≈ -U_center)
-    u_geo = int(np.argmax(_geo_centers_raw[:, 1]))
-    d_geo = int(np.argmin(np.linalg.norm(_geo_centers_raw + _geo_centers_raw[u_geo], axis=1)))
+    # Camera at (0,5,3): face with max Y center faces the camera and is named F.
+    # U = F's neighbor with minimum Z (top of the viewport).
+    f_geo = int(np.argmax(_geo_centers_raw[:, 1]))
+    d_geo = int(np.argmin(np.linalg.norm(_geo_centers_raw + _geo_centers_raw[f_geo], axis=1)))
 
-    # U-ring: 5 faces adjacent to U, sorted CW from F
-    u_adj = [j for j in range(12) if _geo_adj(u_geo, j)]
-    f_geo = min(u_adj, key=lambda j: float(_geo_centers_raw[j][2]))
-    u_ring_cw = _cw_ring_order(u_geo, f_geo, u_adj)
-    # NEIGHBORS["U"] = F, L, BL, BR, R in CW order from outside U
-    u_name_to_geo: dict[str, int] = {_NB["U"][i]: u_ring_cw[i] for i in range(5)}
+    # F-ring: 5 faces adjacent to F, sorted CW from U
+    f_adj = [j for j in range(12) if _geo_adj(f_geo, j)]
+    u_geo = min(f_adj, key=lambda j: float(_geo_centers_raw[j][2]))
+    f_ring_cw = _cw_ring_order(f_geo, u_geo, f_adj)
+    # NEIGHBORS["F"] = U, L, BL, BR, R in CW order from outside F
+    f_name_to_geo: dict[str, int] = {_NB["F"][i]: f_ring_cw[i] for i in range(5)}
 
     # D-ring: 5 faces adjacent to D, sorted CW from dL
     d_adj = [j for j in range(12) if _geo_adj(d_geo, j)]
-    # dL is adjacent to both F and L
-    dfl_geo = next(
+    # dL is the unique D-ring face adjacent to both U and L; this anchors the D-ring orientation.
+    dl_geo = next(
         j for j in d_adj
-        if _geo_adj(j, u_name_to_geo["F"]) and _geo_adj(j, u_name_to_geo["L"])
+        if _geo_adj(j, f_name_to_geo["U"]) and _geo_adj(j, f_name_to_geo["L"])
     )
-    d_ring_cw = _cw_ring_order(d_geo, dfl_geo, d_adj)
+    d_ring_cw = _cw_ring_order(d_geo, dl_geo, d_adj)
     # NEIGHBORS["D"] = dL, dR, dBR, B, dBL in CW order from outside D
     d_name_to_geo: dict[str, int] = {_NB["D"][i]: d_ring_cw[i] for i in range(5)}
 
-    name_to_geo: dict[str, int] = {"U": u_geo, "D": d_geo, **u_name_to_geo, **d_name_to_geo}
+    name_to_geo: dict[str, int] = {"F": f_geo, "D": d_geo, **f_name_to_geo, **d_name_to_geo}
     geo_order = [name_to_geo[name] for name in _F]
 
     verts = [_sort_face_cw(_raw_geo_faces[i], _geo_centers_raw[i]) for i in geo_order]

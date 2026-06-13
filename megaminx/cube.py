@@ -15,18 +15,18 @@ import random
 # ─── Handwritten data ────────────────────────────────────────────────────────
 
 NEIGHBORS: dict[str, list[str]] = {
-    "U":   ["F", "L", "BL", "BR", "R"],
-    "F":   ["U", "R", "dR", "dL", "L"],
-    "R":   ["U", "BR", "dBR", "dR", "F"],
-    "BR":  ["U", "BL", "B", "dBR", "R"],
-    "BL":  ["U", "L", "dBL", "B", "BR"],
-    "L":   ["U", "F", "dL", "dBL", "BL"],
+    "U":   ["F", "R", "dR", "dL", "L"],
+    "F":   ["U", "L", "BL", "BR", "R"],
+    "R":   ["F", "BR", "dBR", "dR", "U"],
+    "BR":  ["F", "BL", "B", "dBR", "R"],
+    "BL":  ["F", "L", "dBL", "B", "BR"],
+    "L":   ["F", "U", "dL", "dBL", "BL"],
     "D":   ["dL", "dR", "dBR", "B", "dBL"],
-    "dR":  ["dL", "F", "R", "dBR", "D"],
+    "dR":  ["dL", "U", "R", "dBR", "D"],
     "dBR": ["dR", "R", "BR", "B", "D"],
     "B":   ["dBR", "BR", "BL", "dBL", "D"],
     "dBL": ["B", "BL", "L", "dL", "D"],
-    "dL":  ["dBL", "L", "F", "dR", "D"],
+    "dL":  ["dBL", "L", "U", "dR", "D"],
 }
 FACES: list[str] = list(NEIGHBORS)
 
