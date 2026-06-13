@@ -31,7 +31,7 @@ def test_f_is_frontmost():
     """F: adjacent to U, closest to camera at (0, 5, 3) among U-ring faces."""
     import numpy as np
     camera = np.array([0.0, 5.0, 3.0])
-    u_ring_names = ["F", "R", "BR", "BL", "L"]
+    u_ring_names = ["F", "R", "dR", "dL", "L"]
     f_dist = np.linalg.norm(camera - c("F"))
     assert all(f_dist <= np.linalg.norm(camera - c(n)) for n in u_ring_names)
 

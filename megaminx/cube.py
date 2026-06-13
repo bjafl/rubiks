@@ -6,7 +6,7 @@ rotation direction). All move tables are generated from sticker simulation
 and verified automatically.
 
 WCA convention: CW from outside each face.
-U CW from above: F → L → BL → BR → R.
+U CW from outside: F → R → dR → dL → L.
 """
 from __future__ import annotations
 from dataclasses import dataclass
