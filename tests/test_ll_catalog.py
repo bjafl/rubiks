@@ -13,12 +13,12 @@ from megaminx.ll_catalog import (
 
 
 def test_ll_corner_slots():
-    assert LL_CORNER_SLOTS == (13, 14, 15, 18, 19)
+    assert LL_CORNER_SLOTS == (6, 7, 9, 18, 19)
     assert len(LL_CORNER_SLOTS) == 5
 
 
 def test_ll_edge_slots():
-    assert LL_EDGE_SLOTS == (18, 19, 22, 25, 26)
+    assert LL_EDGE_SLOTS == (8, 11, 24, 28, 29)
     assert len(LL_EDGE_SLOTS) == 5
 
 
@@ -80,16 +80,16 @@ def test_is_solved_co_stage_accepts_permuted_cp():
     # CO_STAGE only checks CO, not CP — a state with CO=0 but scrambled CP should pass
     # Build state: swap two LL corner pieces but keep orientations 0
     cp = list(SOLVED.cp)
-    # Swap slots 13 and 14 (both LL corners, adjacent to U)
-    cp[13], cp[14] = cp[14], cp[13]
+    # Swap slots 6 and 7 (both LL corners, adjacent to U)
+    cp[6], cp[7] = cp[7], cp[6]
     state = MegaminxState(tuple(cp), SOLVED.co, SOLVED.ep, SOLVED.eo)
     assert CO_STAGE.is_solved(state)
 
 
 def test_is_solved_cp_stage_rejects_permuted_cp():
-    # CP_STAGE_CO_FIRST must reject scrambled CP
+    # CP_STAGE_CO_FIRST must reject scrambled CP — swap two LL corners
     cp = list(SOLVED.cp)
-    cp[5], cp[7] = cp[7], cp[5]
+    cp[6], cp[9] = cp[9], cp[6]
     state = MegaminxState(tuple(cp), SOLVED.co, SOLVED.ep, SOLVED.eo)
     assert not CP_STAGE_CO_FIRST.is_solved(state)
 

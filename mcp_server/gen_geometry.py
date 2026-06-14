@@ -9,14 +9,14 @@ FACE_COLORS: dict[str, str] = {
     "F":   "#FFFFFF",
     "R":   "#E74C3C",
     "L":   "#F39C12",
-    "BL":  "#E91E8C",
-    "BR":  "#9B59B6",
-    "D":   "#D35400",
-    "dR":  "#1ABC9C",
-    "dBR": "#F1C40F",
-    "B":   "#2C3E50",
-    "dBL": "#95A5A6",
-    "dL":  "#2ECC71",
+    "FL":  "#E91E8C",
+    "FR":  "#9B59B6",
+    "B":   "#D35400",
+    "BR":  "#1ABC9C",
+    "DR":  "#F1C40F",
+    "D":   "#2C3E50",
+    "DL":  "#95A5A6",
+    "BL":  "#2ECC71",
 }
 
 OUTPUT = Path(__file__).parent.parent / "viewer" / "geometry.json"

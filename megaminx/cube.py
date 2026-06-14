@@ -6,7 +6,8 @@ rotation direction). All move tables are generated from sticker simulation
 and verified automatically.
 
 WCA convention: CW from outside each face.
-U CW from outside: F → R → dR → dL → L.
+NEIGHBORS lists each face's ring in CCW-from-outside order; sigma uses (i-1)
+to cycle CW — so U CW from outside sends: L → BL → BR → R → F → L.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -15,18 +16,18 @@ import random
 # ─── Handwritten data ────────────────────────────────────────────────────────
 
 NEIGHBORS: dict[str, list[str]] = {
-    "U":   ["F", "R", "dR", "dL", "L"],
-    "F":   ["U", "L", "BL", "BR", "R"],
-    "R":   ["F", "BR", "dBR", "dR", "U"],
-    "BR":  ["F", "BL", "B", "dBR", "R"],
-    "BL":  ["F", "L", "dBL", "B", "BR"],
-    "L":   ["F", "U", "dL", "dBL", "BL"],
-    "D":   ["dL", "dR", "dBR", "B", "dBL"],
-    "dR":  ["dL", "U", "R", "dBR", "D"],
-    "dBR": ["dR", "R", "BR", "B", "D"],
-    "B":   ["dBR", "BR", "BL", "dBL", "D"],
-    "dBL": ["B", "BL", "L", "dL", "D"],
-    "dL":  ["dBL", "L", "U", "dR", "D"],
+    "U":   ["F", "R", "BR", "BL", "L"],
+    "F":   ["U", "L", "FL", "FR", "R"],
+    "R":   ["F", "FR", "DR", "BR", "U"],
+    "FR":  ["F", "FL", "D", "DR", "R"],
+    "FL":  ["F", "L", "DL", "D", "FR"],
+    "L":   ["F", "U", "BL", "DL", "FL"],
+    "B":   ["BL", "BR", "DR", "D", "DL"],
+    "BR":  ["BL", "U", "R", "DR", "B"],
+    "DR":  ["BR", "R", "FR", "D", "B"],
+    "D":   ["DR", "FR", "FL", "DL", "B"],
+    "DL":  ["D", "FL", "L", "BL", "B"],
+    "BL":  ["DL", "L", "U", "BR", "B"],
 }
 FACES: list[str] = list(NEIGHBORS)
 
@@ -75,7 +76,7 @@ _E_INDEX = {frozenset(e): i for i, e in enumerate(EDGES)}
 
 def _sticker_move(face: str) -> dict:
     ns = NEIGHBORS[face]
-    sigma = {ns[i]: ns[(i + 1) % 5] for i in range(5)} | {face: face}
+    sigma = {ns[i]: ns[(i - 1) % 5] for i in range(5)} | {face: face}
     perm = {}
     for ci, cyc in enumerate(CORNERS):
         if face in cyc:

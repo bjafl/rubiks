@@ -7,7 +7,7 @@ from megaminx.cube import (
 
 def test_faces_count():
     assert len(FACES) == 12
-    assert FACES[0] == "U" and FACES[6] == "D"
+    assert FACES[0] == "U" and FACES[6] == "B"
 
 def test_corners_edges_count():
     assert len(CORNERS) == 20
@@ -57,11 +57,11 @@ def test_state_is_hashable():
 
 def test_u_corner_indices():
     u_corners = [i for i, c in enumerate(CORNERS) if "U" in c]
-    assert set(u_corners) == {13, 14, 15, 18, 19}
+    assert set(u_corners) == {6, 7, 9, 18, 19}
 
 def test_u_edge_indices():
     u_edges = [i for i, e in enumerate(EDGES) if "U" in e]
-    assert set(u_edges) == {18, 19, 22, 25, 26}
+    assert set(u_edges) == {8, 11, 24, 28, 29}
 
 def test_apply_sequence():
     state = apply_sequence(SOLVED, ["U", "U'"])

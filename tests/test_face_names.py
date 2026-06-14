@@ -15,23 +15,23 @@ def test_face_names_equal_cube_faces():
 
 
 def test_all_12_wca_names_present():
-    expected = {"U", "D", "F", "R", "BR", "BL", "L", "dR", "dBR", "B", "dBL", "dL"}
+    expected = {"U", "D", "F", "B", "R", "L", "FR", "FL", "BR", "BL", "DR", "DL"}
     assert set(FACE_NAMES) == expected
 
 
-def test_u_highest_y():
-    assert c("U")[1] == max(fc[1] for fc in _face_centers)
+def test_f_highest_y():
+    assert c("F")[1] == max(fc[1] for fc in _face_centers)
 
 
-def test_d_lowest_y():
-    assert c("D")[1] == min(fc[1] for fc in _face_centers)
+def test_b_lowest_y():
+    assert c("B")[1] == min(fc[1] for fc in _face_centers)
 
 
 def test_f_is_frontmost():
     """F: adjacent to U, closest to camera at (0, 5, 3) among U-ring faces."""
     import numpy as np
     camera = np.array([0.0, 5.0, 3.0])
-    u_ring_names = ["F", "R", "dR", "dL", "L"]
+    u_ring_names = ["F", "R", "BR", "BL", "L"]
     f_dist = np.linalg.norm(camera - c("F"))
     assert all(f_dist <= np.linalg.norm(camera - c(n)) for n in u_ring_names)
 
@@ -45,22 +45,22 @@ def test_l_is_leftmost():
 
 
 def test_br_is_back_right():
-    assert c("BR")[2] > 1.0 and c("BR")[0] > 0
+    assert c("BR")[2] < -1.0 and c("BR")[0] > 0
 
 
 def test_bl_is_back_left():
-    assert c("BL")[2] > 1.0 and c("BL")[0] < 0
+    assert c("BL")[2] < -1.0 and c("BL")[0] < 0
 
 
 def test_lower_faces_have_negative_y():
-    for name in ["dR", "dBR", "B", "dBL", "dL"]:
+    for name in ["FR", "DR", "B", "DL", "FL"]:
         assert c(name)[1] <= 0, f"{name} should have non-positive Y (below or at equator)"
 
 
 def test_opposite_pairs_sum_to_zero():
     """Antipodal face pairs sum to zero."""
-    pairs = [("U", "B"), ("F", "D"), ("R", "dBL"), ("L", "dBR"),
-             ("BR", "dL"), ("BL", "dR")]
+    pairs = [("U", "D"), ("F", "B"), ("R", "DL"), ("L", "DR"),
+             ("BR", "FL"), ("BL", "FR")]
     for a, b in pairs:
         s = c(a) + c(b)
         assert np.linalg.norm(s) < 1e-6, f"Pair {a}↔{b} not antipodal: sum={s}"

@@ -31,7 +31,7 @@ def test_solve_three_moves():
     assert is_solved(result)
 
 def test_solve_returns_none_when_too_deep():
-    scrambled = apply_sequence(SOLVED_STATE, ["U", "F", "R", "L", "dBL"])
+    scrambled = apply_sequence(SOLVED_STATE, ["U", "F", "R", "L", "DL"])
     result = solve_path(scrambled, SOLVED_STATE, max_depth=2)
     # max_depth=2 is too shallow for a 5-move scramble
     assert result is None

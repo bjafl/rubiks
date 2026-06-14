@@ -156,21 +156,21 @@ def _match_geo_to_cube() -> tuple[list[list[int]], list[np.ndarray]]:
     f_adj = [j for j in range(12) if _geo_adj(f_geo, j)]
     u_geo = min(f_adj, key=lambda j: float(_geo_centers_raw[j][2]))
     f_ring_cw = _cw_ring_order(f_geo, u_geo, f_adj)
-    # NEIGHBORS["F"] = U, L, BL, BR, R in CW order from outside F
+    # NEIGHBORS["F"] = U, L, FL, FR, R in CW order from outside F
     f_name_to_geo: dict[str, int] = {_NB["F"][i]: f_ring_cw[i] for i in range(5)}
 
-    # D-ring: 5 faces adjacent to D, sorted CW from dL
+    # B-ring: 5 faces adjacent to B, sorted CW from BL
     d_adj = [j for j in range(12) if _geo_adj(d_geo, j)]
-    # dL is the unique D-ring face adjacent to both U and L; this anchors the D-ring orientation.
-    dl_geo = next(
+    # BL is the unique B-ring face adjacent to both U and L; this anchors the B-ring orientation.
+    bl_geo = next(
         j for j in d_adj
         if _geo_adj(j, f_name_to_geo["U"]) and _geo_adj(j, f_name_to_geo["L"])
     )
-    d_ring_cw = _cw_ring_order(d_geo, dl_geo, d_adj)
-    # NEIGHBORS["D"] = dL, dR, dBR, B, dBL in CW order from outside D
-    d_name_to_geo: dict[str, int] = {_NB["D"][i]: d_ring_cw[i] for i in range(5)}
+    b_ring_cw = _cw_ring_order(d_geo, bl_geo, d_adj)
+    # NEIGHBORS["B"] = BL, BR, DR, D, DL in CW order from outside B
+    d_name_to_geo: dict[str, int] = {_NB["B"][i]: b_ring_cw[i] for i in range(5)}
 
-    name_to_geo: dict[str, int] = {"F": f_geo, "D": d_geo, **f_name_to_geo, **d_name_to_geo}
+    name_to_geo: dict[str, int] = {"F": f_geo, "B": d_geo, **f_name_to_geo, **d_name_to_geo}
     geo_order = [name_to_geo[name] for name in _F]
 
     verts = [_sort_face_cw(_raw_geo_faces[i], _geo_centers_raw[i]) for i in geo_order]

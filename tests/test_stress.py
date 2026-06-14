@@ -9,8 +9,8 @@ from megaminx.moves import apply_sequence, FACE_NAMES
 _ALL_MOVES: list[str] = [f + s for f in FACE_NAMES for s in ("", "-", "++", "--")]
 _INVERT_SUFFIX: dict[str, str] = {"": "-", "-": "", "++": "--", "--": "++"}
 
-_LL_CORNERS = frozenset(i for i, c in enumerate(CORNERS) if "U" in c)  # {13, 14, 15, 18, 19}
-_LL_EDGES   = frozenset(i for i, e in enumerate(EDGES) if "U" in e)    # {18, 19, 22, 25, 26}
+_LL_CORNERS = frozenset(i for i, c in enumerate(CORNERS) if "U" in c)  # {6, 7, 9, 18, 19}
+_LL_EDGES   = frozenset(i for i, e in enumerate(EDGES) if "U" in e)    # {8, 11, 24, 28, 29}
 
 
 def _invert_move(move: str) -> str:

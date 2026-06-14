@@ -49,7 +49,7 @@ def test_geometry_edge_counts():
 def test_geometry_u_is_first():
     g = json.loads(GEOMETRY_PATH.read_text())
     assert g["faceNames"][0] == "U"
-    assert g["faceNames"][-1] == "dL"
+    assert g["faceNames"][-1] == "BL"
 
 
 def test_geometry_colors_all_present():
