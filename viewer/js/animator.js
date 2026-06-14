@@ -23,10 +23,12 @@ export function createAnimator(scene, geometry, getMeshesForFace) {
 
   function _parseMoveAngle(move) {
     const step = (Math.PI * 2) / 5;  // 72° in radians
-    if (move.endsWith('++') || move.endsWith('2'))  return  step * 2;
-    if (move.endsWith('--') || move.endsWith("2'")) return -step * 2;
-    if (move.endsWith('-')  || move.endsWith("'"))  return -step;
-    return step;
+    // THREE.js right-hand rule: positive rotation around outward normal = CCW from outside.
+    // WCA convention: plain move = CW from outside → negative angle.
+    if (move.endsWith('++') || move.endsWith('2'))  return -step * 2;
+    if (move.endsWith('--') || move.endsWith("2'")) return  step * 2;
+    if (move.endsWith('-')  || move.endsWith("'"))  return  step;
+    return -step;
   }
 
   function _ease(t) {

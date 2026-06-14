@@ -5,18 +5,19 @@ from pathlib import Path
 from megaminx.moves import get_geometry_data
 
 FACE_COLORS: dict[str, str] = {
-    "U":   "#3498DB",
-    "F":   "#FFFFFF",
-    "R":   "#E74C3C",
-    "L":   "#F39C12",
-    "FL":  "#E91E8C",
-    "FR":  "#9B59B6",
-    "B":   "#D35400",
-    "BR":  "#1ABC9C",
-    "DR":  "#F1C40F",
-    "D":   "#2C3E50",
-    "DL":  "#95A5A6",
-    "BL":  "#2ECC71",
+    # cubing.js Megaminx color scheme (FaceRenamingMapper order → WCA name)
+    "U":  "#ffffff",   # White
+    "F":  "#008800",   # DarkGreen
+    "L":  "#ff0000",   # Red   (internal "R" → WCA "L")
+    "BL": "#e8d0a0",   # Cream (internal "C" → WCA "BL")
+    "BR": "#3399ff",   # Aqua  (internal "A" → WCA "BR")
+    "R":  "#8800dd",   # Purple (internal "L" → WCA "R")
+    "FR": "#ff66cc",   # Pink  (internal "E" → WCA "FR")
+    "FL": "#99ff00",   # Lime  (internal "BF" → WCA "FL")
+    "DL": "#0000ff",   # BoldBlue (internal "BR" → WCA "DL")
+    "B":  "#f4f400",   # Yellow (internal "BL" → WCA "B")
+    "DR": "#ff8000",   # Orange (internal "I" → WCA "DR")
+    "D":  "#888888",   # MediumGray
 }
 
 OUTPUT = Path(__file__).parent.parent / "viewer" / "geometry.json"

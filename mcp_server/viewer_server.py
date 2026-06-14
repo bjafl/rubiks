@@ -4,6 +4,7 @@ Run standalone:  python -m mcp_server.viewer_server
 HTTP port: 8766  (static files + /api/command)
 WS port:   8765
 """
+
 from __future__ import annotations
 import asyncio
 import json
@@ -17,14 +18,16 @@ from megaminx.algorithms import SINGLE_ALGS, get_library
 from mcp_server.viewer_state import ViewerState, parse_sequence
 
 VIEWER_DIR = Path(__file__).parent.parent / "viewer"
-HTTP_PORT  = 8766
-WS_PORT    = 8765
+HTTP_PORT = 8766
+WS_PORT = 8765
+HOST_ADDRESS = "0.0.0.0"
 
 VIEWER_STATE: ViewerState = ViewerState()
 _WS_LOOP: asyncio.AbstractEventLoop | None = None
 
 
 # ── WebSocket ─────────────────────────────────────────────────────────────────
+
 
 async def _ws_handler(websocket) -> None:
     VIEWER_STATE.ws_clients.add(websocket)
@@ -47,11 +50,12 @@ async def _ws_handler(websocket) -> None:
 async def _run_ws() -> None:
     global _WS_LOOP
     _WS_LOOP = asyncio.get_running_loop()
-    async with websockets.serve(_ws_handler, "localhost", WS_PORT):
+    async with websockets.serve(_ws_handler, HOST_ADDRESS, WS_PORT):
         await asyncio.Future()
 
 
 # ── Command dispatch ──────────────────────────────────────────────────────────
+
 
 def _handle_command(cmd: dict) -> dict:
     t = cmd.get("type")
@@ -102,12 +106,13 @@ def _broadcast_sync(msg: dict) -> None:
 
 # ── HTTP ──────────────────────────────────────────────────────────────────────
 
+
 class _HTTPHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(VIEWER_DIR), **kwargs)
 
     def end_headers(self):
-        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         super().end_headers()
 
     def do_POST(self) -> None:
@@ -134,18 +139,19 @@ class _HTTPHandler(SimpleHTTPRequestHandler):
 
 
 def _run_http() -> None:
-    server = HTTPServer(("localhost", HTTP_PORT), _HTTPHandler)
+    server = HTTPServer((HOST_ADDRESS, HTTP_PORT), _HTTPHandler)
     server.serve_forever()
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+
 def run() -> None:
     """Start HTTP thread + WebSocket asyncio server. Blocks until interrupted."""
     http_thread = threading.Thread(target=_run_http, daemon=True)
     http_thread.start()
-    print(f"Viewer:  http://localhost:{HTTP_PORT}/")
-    print(f"WS:      ws://localhost:{WS_PORT}/")
+    print(f"Viewer:  http://{HOST_ADDRESS}:{HTTP_PORT}/")
+    print(f"WS:      ws://{HOST_ADDRESS}:{WS_PORT}/")
     asyncio.run(_run_ws())
 
 

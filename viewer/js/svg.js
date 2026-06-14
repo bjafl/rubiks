@@ -20,7 +20,7 @@ export function updateTopdownSvg(svgEl, state, geometry) {
   const neighborSet = new Set();
   for (const slot of geometry.faceCornerCycles[0]) {
     for (const f of geometry.cornerFaces[slot]) {
-      if (f !== 0 && f < 6) neighborSet.add(f);
+      if (f !== 0) neighborSet.add(f);
     }
   }
   const neighbors = [...neighborSet].slice(0, 5);

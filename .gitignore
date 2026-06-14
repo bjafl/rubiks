@@ -43,3 +43,6 @@ Thumbs.db
 
 # Generated LL catalog JSON files
 ll_catalog/
+
+# Claude Code personal settings (project settings.json is committed, local overrides are not)
+.claude/settings.local.json
