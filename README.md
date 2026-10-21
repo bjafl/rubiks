@@ -139,3 +139,7 @@ class MegaminxState:
 | `pydantic >= 2.0` | FastMCP internals |
 
 Python 3.11+.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
